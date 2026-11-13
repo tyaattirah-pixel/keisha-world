@@ -30,7 +30,7 @@ Word lists live in `public/data.js`. Rules (coins, pass marks) are in `RULES` at
 ## One-time Cloudflare setup
 
 1. **Create the database:** Cloudflare dashboard → Storage & Databases → D1 → Create → name it `keisha-world-db`. Copy its **Database ID**.
-2. Put that ID in `wrangler.toml` (replace `PASTE_YOUR_D1_DATABASE_ID_HERE`), or send it to Claude to do it.
+2. The database ID is already set in `wrangler.toml`.
 3. **Connect the repo:** Workers & Pages → Create → Import a repository → pick `keisha-world`. Keep the default build settings (deploy command `npx wrangler deploy`).
 4. Open the link Cloudflare gives you (`keisha-world.<you>.workers.dev`). On Keisha's phone or tablet: browser menu → **Add to Home Screen**.
 5. Tap **🔒 Mummy** in the lobby to create your PIN. Do this before Keisha plays.

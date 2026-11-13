@@ -9,4 +9,4 @@ binding = "ASSETS"
 [[d1_databases]]
 binding = "DB"
 database_name = "keisha-world-db"
-database_id = "PASTE_YOUR_D1_DATABASE_ID_HERE"
+database_id = "fa2bc682-1371-4bd2-9428-505e6f222455"
