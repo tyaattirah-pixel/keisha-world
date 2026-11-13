@@ -1,0 +1,9 @@
+{
+  "name": "Keisha's World",
+  "short_name": "Keisha's World",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#8fd3ff",
+  "theme_color": "#8fd3ff",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml" }]
+}
