@@ -162,7 +162,7 @@
   function welcome() {
     app.className = "";
     app.innerHTML = '<div class="col" style="align-items:center;text-align:center;padding-top:30px">' +
-      '<div class="title">KEISHA’S WORLD</div><div class="zh" style="font-size:20px">凯莎的世界</div>' +
+      '<div class="title">KEISHA’S WORLD</div><div class="zh" style="font-size:20px">琦莎的世界</div>' +
       '<div id="av" class="av-stage" style="width:260px;height:300px"></div><div class="platform"></div>' +
       '<div class="card" style="margin-top:26px;text-align:left"><b>Hi Keisha!</b><br>Learn Chinese words, earn coins, unlock islands, and dress up your avatar. 🌟<br><br>First, let’s do a quick <b>Power Check</b> to find your level. It’s not a school test: just tap <b>“I don’t know”</b> when you’re not sure. You get <b>' + RULES.testReward + ' coins</b> for finishing!</div>' +
       '<button class="btn big green" id="go">START</button><button class="btn" id="later">Later</button></div>';
@@ -196,8 +196,8 @@
     var cur = STAGES[Math.min(S.unlocked, STAGES.length - 1)];
     app.innerHTML =
       '<div class="cloud" style="top:150px;left:10px;width:64px;height:20px"></div><div class="cloud" style="top:330px;right:12px;width:80px;height:22px"></div>' +
-      '<div class="top"><div class="chip"><span class="lvl">Lv' + lvl + '</span>Keisha</div><div class="chip" style="font-size:19px">' + coin() + S.coins + "</div></div>" +
-      '<div class="title" style="margin-top:8px">KEISHA’S WORLD</div>' +
+      '<div class="top"><div class="chip"><span class="lvl">Lv' + lvl + '</span>Keisha <span class="zh" style="font-size:15px">琦莎</span></div><div class="chip" style="font-size:19px">' + coin() + S.coins + "</div></div>" +
+      '<div class="title" style="margin-top:8px">KEISHA’S WORLD</div><div class="zh" style="text-align:center;font-size:18px">琦莎的世界</div>' +
       (testDue() ? '<button class="btn yellow" id="pc" style="width:100%;margin-top:10px">⚡ Power Check ready! +' + RULES.testReward + " coins</button>" : "") +
       '<div class="card" style="margin-top:10px;padding:10px 12px"><div class="spread" style="margin-bottom:8px"><b>Daily check-in</b><b>🔥 ' + (c.last && daysBetween(c.last, today) <= 1 ? c.streak : 0) + "-day streak</b></div>" +
       '<div class="days">' + days + '</div><div class="notice spread" style="margin-top:8px"><span>Today: ' + Math.min(done, RULES.perStage) + " / " + RULES.perStage + ' words</span><span style="font-size:12px">Skip 3 days = lose ' + RULES.penaltyCoins + " coins</span></div></div>" +

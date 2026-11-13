@@ -1,4 +1,4 @@
-# Keisha's World 凯莎的世界
+# Keisha's World 琦莎的世界
 
 A Roblox-style Mandarin learning game for Keisha, built from her SJKC Bahasa Cina textbooks.
 Runs on Cloudflare Workers, with progress saved in a Cloudflare D1 database.
