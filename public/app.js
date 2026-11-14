@@ -84,7 +84,7 @@
   function boot() {
     apiGet("/api/state").then(function (r) {
       ONLINE = true; PIN_SET = r.pinSet; FLAGS = r.flags || {};
-      if (r.state) S = Object.assign(blank(), r.state); else { var l = lsGet(LS.state, null); if (l) S = Object.assign(blank(), l); }
+      if (r.state) S = Object.assign(blank(), r.state); else { S = blank(); try { localStorage.removeItem(LS.state); localStorage.removeItem(LS.events); localStorage.removeItem(LS.cash); } catch (e) {} } // online with no saved game = fresh start
       HIST = (r.events || []).slice().reverse();
       CASH = r.cash || [];
       afterLoad();
