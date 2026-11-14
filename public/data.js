@@ -1,44 +1,164 @@
-// Keisha's World — word data
-// Source: Bahasa Cina SJKC Tahun 1 textbook, 认读生字与习写生字表 (p.153), units 识字一 to 第十单元.
-// Function words (了 的 着 吗 们 …) are left out of the guessing game because they have no picture-able meaning.
-// Format: "汉字|pinyin|English"
+// Keisha's World — word data (v2: Recognition · Comprehension · Application)
+// Source: Bahasa Cina SJKC Tahun 1 textbook, lessons 识字一 to 第十单元 (pages 2–62) and the
+// 认读生字与习写生字表 on p.153. Island titles are the real lesson titles.
+//
+// Word format:  汉字|pinyin|English|picture|character clue
+// tb = sentences copied from the textbook, [ ] marks the gap (the answer is an island word)
+// nw = new sentences written only with Standard 1 words
+// rq = read & answer:  sentence|question|answer|wrong1,wrong2,wrong3|word it tests
 window.WORLDS = [
   { id: 1, name: "World 1 · Standard 1", islands: [
-    { zh: "识字一", en: "Words I See", w: "蓝|lán|blue;天|tiān|sky;太阳|tài yáng|sun;小|xiǎo|small;鸟|niǎo|bird;上|shàng|up / on top;学|xué|learn;读|dú|read;书|shū|book;写|xiě|write;字|zì|word / character" },
-    { zh: "上学了", en: "Off to School", w: "花|huā|flower;跟|gēn|follow / with;我|wǒ|I / me;招手|zhāo shǒu|wave hello;手|shǒu|hand;一|yī|one;起|qǐ|get up;走|zǒu|walk;到|dào|arrive;校|xiào|school;门|mén|door / gate;口|kǒu|mouth" },
-    { zh: "早操", en: "Morning Exercise", w: "早|zǎo|early / morning;跳|tiào|jump;来|lái|come;去|qù|go;在|zài|at / in;树|shù|tree;枝|zhī|branch;做|zuò|do / make;操|cāo|exercise;朋友|péng you|friend;跑|pǎo|run;草|cǎo|grass;地|dì|ground" },
-    { zh: "识字读书", en: "Learning to Read", w: "课|kè|lesson / class;识|shí|recognise;会|huì|can / able to;儿|ér|child;歌|gē|song;故事|gù shi|story;事|shì|thing / matter;习|xí|practise;长|zhǎng|grow;知|zhī|know" },
-    { zh: "笔画", en: "Pen Strokes", w: "笔|bǐ|pen;画|huà|draw / picture;要|yào|want;好|hǎo|good;眼|yǎn|eye;心|xīn|heart;也|yě|also / too;顺|shùn|smooth / in order;错|cuò|wrong / mistake;不|bù|not / no" },
-    { zh: "我的家", en: "My Family", w: "开|kāi|open;爸|bà|dad;妈|mā|mum;笑|xiào|laugh / smile;回|huí|go back;哥|gē|big brother;姐|jiě|big sister;全|quán|whole / all;家|jiā|home / family;声|shēng|sound / voice" },
-    { zh: "星星", en: "Stars", w: "星|xīng|star;那|nà|that;多|duō|many;这|zhè|this;中|zhōng|middle;间|jiān|room / between;是|shì|is / am / are;三|sān|three;靠|kào|lean on;样|yàng|look / kind;近|jìn|near;亲|qīn|dear / relative;明|míng|bright" },
-    { zh: "吃晚饭", en: "Dinner Time", w: "吃|chī|eat;晚|wǎn|evening / late;饭|fàn|rice / meal;有|yǒu|have;瓜|guā|melon;鱼|yú|fish;还|hái|still / also;蛋|dàn|egg;桌|zhuō|table;菜|cài|vegetable / dish;可|kě|can / may;大|dà|big;都|dōu|all;喜欢|xǐ huan|like" },
-    { zh: "搭积木", en: "Building Blocks", w: "妹|mèi|little sister;搭|dā|build / put up;积木|jī mù|toy blocks;木|mù|wood;房|fáng|house;子|zǐ|child;机|jī|machine;场|chǎng|place / field;配|pèi|match;说|shuō|say / speak;城|chéng|city / town;市|shì|market / city;和|hé|and;游|yóu|swim / travel;乐|lè|happy / fun" },
-    { zh: "识字二", en: "Nature Words", w: "双|shuāng|pair;林|lín|woods;片|piàn|slice / piece;森林|sēn lín|forest;绿|lǜ|green;羊|yáng|sheep / goat;美|měi|beautiful;肥|féi|fat (animal);丽|lì|pretty;舌|shé|tongue;甜|tián|sweet;爱|ài|love;蜂|fēng|bee;蜜|mì|honey" },
-    { zh: "露珠", en: "Dewdrops", w: "露|lù|dew;珠|zhū|pearl / bead;照|zhào|shine on;张|zhāng|open (eyes / mouth);又|yòu|again;月|yuè|moon;亮|liàng|bright / shiny;出|chū|go out;红|hóng|red;见|jiàn|see / meet" },
-    { zh: "雨停了", en: "After the Rain", w: "雨|yǔ|rain;停|tíng|stop;更|gèng|even more;山|shān|mountain;青|qīng|blue-green;弯|wān|bent / curved;曲|qū|winding;河|hé|river;胖|pàng|chubby" },
-    { zh: "数一数", en: "Let's Count", w: "老|lǎo|old;老虎|lǎo hǔ|tiger;猫|māo|cat;边|biān|side;少|shǎo|few / little;群|qún|group / flock;鹅|é|goose;数|shǔ|count;瞧|qiáo|look / peek;记|jì|remember;牢|láo|firmly" },
-    { zh: "小蚂蚁", en: "Little Ants", w: "蚂蚁|mǎ yǐ|ant;搬|bān|move / carry;虫|chóng|bug / insect;动|dòng|move;两|liǎng|two;点|diǎn|dot / a bit;重|zhòng|heavy;四|sì|four;五|wǔ|five;六|liù|six;七|qī|seven;进|jìn|go in;洞|dòng|hole / cave" },
-    { zh: "我的身体", en: "My Body", w: "眼睛|yǎn jing|eyes;脚|jiǎo|foot;爪|zhǎo|claw;腿|tuǐ|leg;短|duǎn|short;牙|yá|tooth;牙齿|yá chǐ|teeth;睡觉|shuì jiào|go to sleep" },
-    { zh: "小蜜蜂", en: "Busy Bees", w: "你|nǐ|you;就|jiù|right away;飞|fēi|fly;园|yuán|garden / park;嗅|xiù|sniff;香|xiāng|fragrant;味|wèi|taste / flavour;采|cǎi|pick / gather;造|zào|make / build;时|shí|time;流|liú|flow;汗|hàn|sweat;水|shuǐ|water" },
-    { zh: "去玩吧", en: "Playground", w: "香蕉|xiāng jiāo|banana;黄|huáng|yellow;像|xiàng|look like;滑梯|huá tī|slide (playground);滑|huá|slippery;玩|wán|play;爬|pá|climb;下|xià|down;坐|zuò|sit;快|kuài|fast" },
-    { zh: "唱歌", en: "Sing Along", w: "唱|chàng|sing;里|lǐ|inside;很|hěn|very;每|měi|every;从|cóng|from;响|xiǎng|loud / ring;落|luò|fall / drop;风|fēng|wind;听|tīng|listen;座|zuò|seat" },
-    { zh: "识字三", en: "Feelings", w: "对|duì|correct;晴|qíng|sunny;伤|shāng|hurt;吵|chǎo|noisy / quarrel;闹|nào|make a fuss;安|ān|calm / safe;静|jìng|quiet;怕|pà|afraid;空|kōng|empty / sky;放|fàng|put / let go;情|qíng|feeling" },
-    { zh: "夜晚", en: "Night Time", w: "夜|yè|night;悄悄|qiāo qiāo|quietly;换|huàn|change / swap;黑|hēi|black / dark;色|sè|colour;衣|yī|clothes;最|zuì|most;留|liú|stay / keep" },
-    { zh: "画画", en: "Let's Draw", w: "用|yòng|use;铅笔|qiān bǐ|pencil;发现|fā xiàn|discover;慢|màn|slow;白|bái|white;文|wén|writing / language;图|tú|picture / map;本|běn|notebook" },
-    { zh: "沙滩", en: "At the Beach", w: "金|jīn|gold;沙|shā|sand;沙滩|shā tān|beach;银|yín|silver;船|chuán|boat;工具|gōng jù|tools;简单|jiǎn dān|simple;板|bǎn|board;看|kàn|look at / watch;身|shēn|body;后|hòu|back / after;串|chuàn|string of beads" },
-    { zh: "剪纸", en: "Paper Cutting", w: "公|gōng|public;轻|qīng|light (not heavy);吹|chuī|blow;叶|yè|leaf;飘|piāo|float / flutter;头|tóu|head;带|dài|bring / carry;拿|ná|take / hold;剪|jiǎn|cut (scissors);刀|dāo|knife;贴|tiē|stick / paste;纸|zhǐ|paper" }
+    { zh: "识字一", en: "Words I See",
+      w: "蓝|lán|blue|🟦|Grass 艹 on top: blue was first made from plants;天|tiān|sky|🌤️|A person 大 with a line 一 above the head: the sky;太阳|tài yáng|sun|☀️|太 = 大 with a dot. 阳 has 日 (sun) inside;小|xiǎo|small|🐜|Three little strokes: something small;鸟|niǎo|bird|🐦|Look for the dot: it’s the bird’s eye! 乌 (crow) has no dot;上|shàng|up / on top|⬆️|A short line ABOVE the long line: up;学|xué|learn|🎒|子 (child) at the bottom: a child learning;读|dú|read|📖|讠 (speech) on the left: reading out loud;书|shū|book|📕|Looks like a book being written in;写|xiě|write|✍️|A roof 冖 on top, then 与;字|zì|word / character|🔤|子 (child) under a roof 宀: a child at home learning words",
+      tb: "[太阳]跟我一起走。;小[鸟]儿，起得早。;识了字儿会[读]书。;小朋友，学[写]字。",
+      nw: "我爱[读]书。;[小]鸟在树上。;我在家[写]字。;天上有[太阳]。;天空是[蓝]色的。;[天]上有星星。;小鸟在树[上]。;我去[学]校。;我爱读[书]。;我会写[字]。",
+      rq: "小鸟在蓝天上飞。|什么在飞？|小鸟|太阳,书,字|鸟" },
+    { zh: "上学了", en: "Off to School",
+      w: "花|huā|flower|🌸|Grass 艹 on top: flowers are plants;跟|gēn|follow / with|👣|足 (foot) on the left: your feet follow;我|wǒ|I / me|🙋|Has a hand 扌 and a spear 戈: “me, holding my spear!”;招手|zhāo shǒu|wave hello|👋|招 has 扌 (hand) + 召 (call): call with your hand;手|shǒu|hand|✋|Looks like a hand with fingers;一|yī|one|1️⃣|One line = one;起|qǐ|get up|🛏️|走 (walk) on the left: get up and go;走|zǒu|walk|🚶|土 on top of a foot: walking on the ground;到|dào|arrive|📍|刂 (knife) on the right, 至 (reach) on the left;校|xiào|school|🏫|木 (wood) on the left: old schools were wooden;门|mén|door / gate|🚪|Looks like a door from the side;口|kǒu|mouth|👄|A square: an open mouth",
+      tb: "[花]儿跟我招招手。;花儿跟我招招[手]。;太阳跟我一起[走]。;一起走到[校]门口。",
+      nw: "[我]上学了。;小鸟[跟]我一起唱歌。;我在校门口[招手]。;我有[一]个哥哥。;早上我[起]得早。;我走[到]学校了。;爸爸开[门]了。;我在校门[口]。",
+      rq: "花儿跟我招招手。|谁跟我招手？|花儿|太阳,小鸟,门口|花" },
+    { zh: "早操", en: "Morning Exercise",
+      w: "早|zǎo|early / morning|🌅|日 (sun) on top of 十: the sun just rising;跳|tiào|jump|🐸|足 (foot) on the left: jumping uses your feet;来|lái|come|👈|Looks like wheat: harvest has come;去|qù|go|👉|土 on top of 厶: going away;在|zài|at / in|📍|Has 土 (ground): being somewhere;树|shù|tree|🌳|木 (wood) + 对: trees are made of wood;枝|zhī|branch|🌿|木 (tree) + 支 (stick out): a branch sticking out of a tree;做|zuò|do / make|🛠️|亻 (person) on the left: a person doing;操|cāo|exercise|🤸|扌 (hand) on the left: exercise moves your hands;朋友|péng you|friend|👭|朋 = two moons 月 side by side, like two friends;跑|pǎo|run|🏃|足 (foot) + 包: running feet;草|cǎo|grass|🌱|Grass 艹 on top;地|dì|ground|🟫|土 (earth) on the left: the ground",
+      tb: "小鸟儿，起得[早]。;[跳]来跳去。;在[树]枝上做早操。;小[朋友]，起得早。;[跑]来跑去。;在[草]地上做早操。",
+      nw: "我[在]家里。;小鸟在树[枝]上唱歌。;我们一起[做]早操。;我[去]学校。;妈妈[来]了。;我们一起做早[操]。;小鸟在草[地]上。",
+      rq: "小朋友在草地上做早操。|小朋友在哪里？|草地上|树枝上,门口,家里|地" },
+    { zh: "识字读书长知识", en: "Learning to Read",
+      w: "课|kè|lesson / class|🧑‍🏫|讠 (speech): a teacher speaking in class;识|shí|recognise|👀|讠 (speech) + 只: knowing what to say;会|huì|can / able to|💪|人 on top: a person who can;儿|ér|child|🧒|Looks like two little legs;歌|gē|song|🎵|欠 (open mouth) on the right: singing;故事|gù shi|story|📚|故 + 事: a story;事|shì|thing / matter|📋|A hand holding something: doing a thing;习|xí|practise|✏️|Looks like a bird’s wing practising to fly;长|zhǎng|grow|📏|Long strokes: growing tall;知|zhī|know|💡|矢 (arrow) + 口: knowing hits the target like an arrow",
+      tb: "上[课]了，来识字。;识了字儿[会]读书。;读儿[歌]，读故事。;读儿歌，读[故事]。;天天学[习]长知识。",
+      nw: "我会唱[歌]。;妈妈说了一个[故事]。;我天天[长]大。;我[识]字了。;我会读[儿]歌。;我爱听故[事]。;我天天学习长[知]识。",
+      rq: "上课了，我们一起读故事。|我们一起读什么？|故事|儿歌,字,书包|故事" },
+    { zh: "学写字", en: "Learning to Write",
+      w: "笔|bǐ|pen|🖊️|竹 (bamboo) on top: old pens were bamboo;画|huà|draw / picture|🖼️|A picture inside a frame;要|yào|want|🙏|西 on top of 女;好|hǎo|good|👍|女 (woman) + 子 (child): mum and child = good;眼|yǎn|eye|👁️|目 (eye) on the left;心|xīn|heart|❤️|Looks like a heart with dots;也|yě|also / too|➕|Looks like a hook;顺|shùn|in order|➡️|川 (river) on the left: flowing in order;错|cuò|wrong / mistake|❌|金 (metal) on the left;不|bù|not / no|🚫|A line blocking: no!",
+      tb: "一笔一画[要]写好。;一笔一画要写[好]。;眼到手到[心]也到。;眼到手到心[也]到。;笔画笔顺[错]不了。",
+      nw: "我用[笔]写字。;我爱[画]画。;小鸟的[眼]睛很小。;笔画笔[顺]要写对。;我[不]怕。",
+      rq: "小朋友，学写字，一笔一画要写好。|字要怎么写？|写好|写错,不写,写快|好" },
+    { zh: "笑声回来了", en: "Laughter Comes Home",
+      w: "开|kāi|open|🔓|Two hands lifting a bar: open;爸|bà|dad|👨|父 (father) on top;妈|mā|mum|👩|女 (woman) on the left;笑|xiào|laugh / smile|😄|竹 on top: bamboo bending like a smile;回|huí|go back|🔄|A box inside a box: going round and back;哥|gē|big brother|👦|Two 可 stacked;姐|jiě|big sister|👧|女 (woman) on the left;全|quán|whole / all|💯|人 on top of 王;家|jiā|home / family|🏠|宀 (roof) on top: a home;声|shēng|sound / voice|🔊|士 on top",
+      tb: "门[开]了。;[爸]爸妈妈笑着回来了。;哥哥[姐]姐笑着回来了。;全[家]的笑声回来了。;全家的笑[声]回来了。",
+      nw: "[妈]妈在家里。;我和[哥]哥一起玩。;我放学[回]家了。;妈妈[笑]了。;[全]家一起吃饭。",
+      rq: "门开了，爸爸妈妈笑着回来了。|谁回来了？|爸爸妈妈|哥哥姐姐,老师,小鸟|回" },
+    { zh: "星星", en: "Stars",
+      w: "星|xīng|star|⭐|日 (sun) on top: stars are suns;那|nà|that|👉|阝 on the right;多|duō|many|🔢|Two 夕 stacked: more and more;这|zhè|this|👇|辶 (walking) at the bottom;中|zhōng|middle|🎯|A line through the middle of a box;间|jiān|room / between|🚪|日 (sun) inside a door 门;是|shì|is / am / are|✅|日 (sun) on top;三|sān|three|3️⃣|Three lines = three;靠|kào|lean on|🤝|告 on top of 非;样|yàng|look / kind|🎨|木 (wood) on the left;近|jìn|near|📍|辶 (walking) at the bottom: a short walk;亲|qīn|dear / relative|🤗|立 (stand) on top;明|míng|bright|💡|日 (sun) + 月 (moon) together: very bright!",
+      tb: "天上[星]星那么多。;天上星星那么[多]。;[这]一颗我妈妈。;[那]一颗我爸爸。;中[间]的一颗[是]我。",
+      nw: "天上有[三]颗星星。;我家[近]学校。;月亮很[明]亮。;我坐在[中]间。;我[靠]着妈妈。;这[样]画很好。;爸爸妈妈是我的[亲]人。",
+      rq: "天上星星那么多，中间的一颗是我。|中间的一颗是谁？|我|妈妈,爸爸,哥哥|中" },
+    { zh: "开心吃晚饭", en: "Happy Dinner",
+      w: "吃|chī|eat|🍽️|口 (mouth) on the left;晚|wǎn|evening / late|🌆|日 (sun) on the left: when the sun goes down;饭|fàn|rice / meal|🍚|饣 (food) on the left;有|yǒu|have|🤲|月 at the bottom, a hand on top: holding meat;瓜|guā|melon|🍈|Looks like a melon hanging on a vine;鱼|yú|fish|🐟|Head, body with scales, and a tail at the bottom;还|hái|still / also|➕|辶 (walking) at the bottom;蛋|dàn|egg|🥚|虫 at the bottom;桌|zhuō|table|🪑|木 (wood) at the bottom: a wooden table;菜|cài|vegetable / dish|🥬|Grass 艹 on top: vegetables are plants;可|kě|can / may|👌|口 (mouth) inside;大|dà|big|🐘|A person stretching arms wide: big!;都|dōu|all|👨‍👩‍👧|阝 on the right;喜欢|xǐ huan|like|😍|喜 has 口 (mouth): a happy smile",
+      tb: "一家开心吃[晚]饭。;有[瓜]有鱼还有蛋。;有瓜有[鱼]还有蛋。;有瓜有鱼还有[蛋]。;一[桌]饭菜多可口。;全家大小都[喜欢]。",
+      nw: "我[吃]饭了。;桌上[有]很多菜。;我[喜欢]吃鱼。;我们吃晚[饭]。;我有鱼，[还]有蛋。;妈妈做的[菜]很香。;我[可]以玩吗？;老虎很[大]。;我们[都]爱吃鱼。",
+      rq: "晚上，妈妈在家里做饭。哥哥在桌子边读书。|谁在读书？|哥哥|妈妈,爸爸,姐姐|读" },
+    { zh: "我跟妹妹搭积木", en: "Building Blocks",
+      w: "妹|mèi|little sister|👧|女 (woman) on the left;搭|dā|build / put up|🧱|扌 (hand) on the left: building with hands;积木|jī mù|toy blocks|🧱|木 (wood): blocks are wooden;木|mù|wood|🪵|Looks like a tree with roots;房|fáng|house|🏠|户 (door) on top;子|zǐ|child|👶|A baby with arms out;机|jī|machine|✈️|木 (wood) on the left;场|chǎng|place / field|🏟️|土 (ground) on the left;配|pèi|match|🧩|酉 on the left;说|shuō|say / speak|💬|讠 (speech) on the left;城|chéng|city / town|🏙️|土 (earth) on the left: city walls;市|shì|market / city|🏪|亠 on top;和|hé|and|➕|禾 (grain) + 口 (mouth);游|yóu|swim / travel|🏊|氵 (water) on the left;乐|lè|happy / fun|🎉|Looks like a drum on a stand",
+      tb: "我跟[妹]妹搭积木。;我跟妹妹搭[积木]。;搭了[房]子搭学校。;我[说]：“这是我们的城市！”;这是我们的[城]市！;搭我们的家[和]游乐场！",
+      nw: "我和妹妹去[游]乐场。;飞[机]在蓝天上飞。;我们一起[搭]积木。;桌子是[木]头做的。;这是我的房[子]。;我们去游乐[场]玩。;红花[配]绿叶。;我们的城[市]很美。;我们快快[乐]乐地玩。",
+      rq: "我跟妹妹搭积木，搭了房子搭学校。|我跟谁搭积木？|妹妹|哥哥,爸爸,朋友|妹" },
+    { zh: "识字二", en: "Nature Words",
+      w: "双|shuāng|pair|👟|Two 又 side by side: a pair;林|lín|woods|🌲|Two trees 木木 = woods;片|piàn|slice / piece|🍞|Looks like half a tree cut into a slice;森林|sēn lín|forest|🌳|Three trees 木木木 = a forest!;绿|lǜ|green|🟩|纟 (silk) on the left: green thread;羊|yáng|sheep / goat|🐑|Two horns on top;美|měi|beautiful|🌺|羊 (sheep) on top of 大: a big sheep was beautiful;肥|féi|fat (animal)|🐷|月 (meat) on the left;丽|lì|pretty|💐|Two matching shapes: pretty pair;舌|shé|tongue|👅|千 + 口: a tongue out of a mouth;甜|tián|sweet|🍬|舌 (tongue) + 甘 (sweet);爱|ài|love|💗|爫 (a hand) on top, 友 (friend) at the bottom: a hand reaching out to a friend;蜂|fēng|bee|🐝|虫 (insect) on the left;蜜|mì|honey|🍯|虫 (insect) at the bottom: bees make honey",
+      tb: "一片[森林]一片绿。;一片森林一片[绿]。;[羊]大美。;羊肥草绿多[美]丽。;我[爱]蜂蜜甜蜜蜜。;我爱蜂蜜[甜]蜜蜜。",
+      nw: "我有一[双]小手。;小蜜蜂在[林]里飞。;我拿了一[片]叶子。;这只羊很[肥]。;花儿很美[丽]。;小猫用[舌]头吃饭。;小蜜[蜂]飞来了。;我爱吃蜂[蜜]。",
+      rq: "羊大美，羊肥草绿多美丽。|草是什么颜色？|绿色|红色,黑色,白色|绿" },
+    { zh: "小露珠", en: "Little Dewdrop",
+      w: "露|lù|dew|💧|雨 (rain) on top: water drops;珠|zhū|pearl / bead|📿|王 (jade) on the left;照|zhào|shine on|📸|火 (four dots) at the bottom: light;张|zhāng|(flat things)|🖼️|弓 (bow) on the left;又|yòu|again|🔁|Looks like a hand;月|yuè|moon|🌙|Looks like a crescent moon;亮|liàng|bright / shiny|✨|A tall building with lights;出|chū|go out|🚶‍♀️|Two mountains 山: going out over the hills;红|hóng|red|🔴|纟 (silk) on the left: red thread;见|jiàn|see / meet|👀|Looks like a big eye walking on two legs: going to see",
+      tb: "小露珠，会[照]相。;照了一[张]又一张。;照星星，照[月]亮。;一照照出[红]太阳。;照着照着不[见]了。",
+      nw: "[月]亮出来了。;太阳[出]来了。;花是[红]色的。;草上有小[露]珠。;小露[珠]会照相。;我[又]来了。;星星很[亮]。",
+      rq: "小露珠照着照着不见了，跟着太阳回家了。|小露珠跟谁回家了？|太阳|月亮,星星,小鸟|见" },
+    { zh: "雨停了", en: "After the Rain",
+      w: "雨|yǔ|rain|🌧️|Raindrops falling under a cloud;停|tíng|stop|✋|亻 (person) on the left;更|gèng|even more|📈|日 inside;山|shān|mountain|⛰️|Three mountain peaks;青|qīng|blue-green|🌿|月 at the bottom;弯|wān|bent / curved|↪️|弓 (bow) at the bottom: curved like a bow;曲|qū|winding|〰️|Looks like a bendy shape;河|hé|river|🏞️|氵 (water) on the left;胖|pàng|chubby|🐼|月 (meat/body) on the left",
+      tb: "[雨]停了，雨停了。;天，[更]蓝了。;[山]，更青了。;山，更[青]了。;[弯]弯曲曲的小河。;弯弯曲曲的小[河]。;也长[胖]了。",
+      nw: "下[雨]了，我在家里。;小船在[河]上走。;雨[停]了。;小河弯弯[曲]曲。",
+      rq: "雨停了，天更蓝了，山更青了。|雨停了，天怎么样？|更蓝了|更黑了,更红了,下雨了|更" },
+    { zh: "大小多少", en: "Big, Small, Many, Few",
+      w: "老|lǎo|old|👴|Looks like an old person with a walking stick;老虎|lǎo hǔ|tiger|🐯|虎 has stripes on top: a tiger;猫|māo|cat|🐱|犭 (animal) on the left;边|biān|side|↔️|辶 (walking) at the bottom;少|shǎo|few / little|🤏|小 (small) with one more stroke: few;群|qún|group / flock|🐑🐑|羊 (sheep) on the right: a flock of sheep;鹅|é|goose|🦢|鸟 (bird) on the right;数|shǔ|count|🔢|攵 (hand) on the right: counting on fingers;瞧|qiáo|look / peek|👀|目 (eye) on the left;记|jì|remember|🧠|讠 (speech) on the left;牢|láo|firmly|🔒|牛 (cow) under a roof 宀: a cow kept firmly in a shed",
+      tb: "一只[老虎]一只猫。;一只老虎一只[猫]。;一边多，一边[少]。;一[群]天鹅一只鸟。;[数]一数，瞧一瞧。;数一数，[瞧]一瞧。;大小多少[记]得牢。",
+      nw: "草地上有一群[鹅]。;我坐在妈妈身[边]。;[老]虎很大。;我记得很[牢]。",
+      rq: "一个大，一个小，一只老虎一只猫。|哪一个大？|老虎|猫,小鸟,天鹅|老虎" },
+    { zh: "蚂蚁搬小虫", en: "Ants Move a Bug",
+      w: "蚂蚁|mǎ yǐ|ant|🐜|Both have 虫 (insect) on the left;搬|bān|move / carry|📦|扌 (hand) on the left: carrying with hands;虫|chóng|bug / insect|🐛|Looks like a little bug;动|dòng|move|🏃‍♀️|力 (strength) on the right: moving takes strength;两|liǎng|two|✌️|Two people under a roof;点|diǎn|dot / a bit|⚫|Four dots at the bottom;重|zhòng|heavy|🏋️|Lots of lines: heavy!;四|sì|four|4️⃣|A box with legs inside;五|wǔ|five|5️⃣|Like an X between two lines;六|liù|six|6️⃣|A dot hat on top;七|qī|seven|7️⃣|Like a 7 upside down;进|jìn|go in|🚪|辶 (walking) at the bottom: walking in;洞|dòng|hole / cave|🕳️|氵 (water) on the left",
+      tb: "小[蚂蚁]，搬小虫。;小蚂蚁，[搬]小虫。;一个搬，搬不[动]。;[两]个搬，有点儿重。;两个搬，有点儿[重]。;大家一起搬[进]洞。;大家一起搬进[洞]。",
+      nw: "我有[四]本书。;桌上有[五]个蛋。;小[虫]在花上。;我有一[点]儿怕。;我有[六]本书。;天上有[七]颗星星。",
+      rq: "一个搬，搬不动，两个搬，有点儿重。|两个搬，怎么样？|有点儿重|搬不动,很简单,飞走了|重" },
+    { zh: "鼠老师画猫", en: "Mr Mouse Draws a Cat",
+      w: "眼睛|yǎn jing|eyes|👀|Both have 目 (eye) on the left;脚|jiǎo|foot|🦶|月 (body) on the left;爪|zhǎo|claw|🐾|Looks like a claw scratching down;腿|tuǐ|leg|🦵|月 (body) on the left;短|duǎn|short|📏|矢 (arrow) on the left: short like an arrow;牙|yá|tooth|🦷|Looks like a tooth;牙齿|yá chǐ|teeth|😁|齿 shows teeth inside a mouth;睡觉|shuì jiào|go to sleep|😴|睡 has 目 (eye): closing your eyes",
+      tb: "[眼睛]要画小。;[脚]爪要画少。;脚[爪]要画少。;小[腿]要画短。;小腿要画[短]。;[牙齿]一个也不画。",
+      nw: "晚上我要[睡觉]了。;小猫的[牙]很小。",
+      rq: "眼睛要画小，牙齿一个也不画。|什么一个也不画？|牙齿|眼睛,脚爪,小腿|牙齿" },
+    { zh: "小蜜蜂", en: "Little Bee",
+      w: "你|nǐ|you|🫵|亻 (person) on the left;就|jiù|right away|⚡|京 on the left;飞|fēi|fly|🕊️|Looks like a bird’s wings;园|yuán|garden / park|🏡|A big box around: a fenced garden;嗅|xiù|sniff|👃|口 + 自 (nose) + 犬 (dog): a dog sniffing;香|xiāng|fragrant|🌹|禾 (grain) on top of 日;味|wèi|taste / flavour|👅|口 (mouth) on the left;采|cǎi|pick / gather|🖐️|A hand 爫 on top of a tree 木: picking;造|zào|make / build|🔨|辶 (walking) at the bottom;时|shí|time|⏰|日 (sun) on the left: telling time by the sun;流|liú|flow|🌊|氵 (water) on the left;汗|hàn|sweat|💦|氵 (water) on the left;水|shuǐ|water|💧|Looks like flowing water",
+      tb: "小蜜蜂，[你]早哇！;一大早，你[就]飞到花园了。;你就[飞]到花园了。;你就飞到花[园]了。;你是[嗅]到花儿的[香]味儿。;[采]花蜜[造]出来的。;是你们采花蜜时[流]出来的[汗]水吗？",
+      nw: "河里有很多[水]。;花儿很[香]。;花儿有香[味]。;吃饭的[时]间到了。",
+      rq: "一大早，小蜜蜂就飞到花园了。|小蜜蜂飞到哪里？|花园|学校,河里,家里|园" },
+    { zh: "香蕉滑梯", en: "Banana Slide",
+      w: "香蕉|xiāng jiāo|banana|🍌|蕉 has grass 艹 on top: a plant;黄|huáng|yellow|🟡|Lots of lines in the middle;像|xiàng|look like|🪞|亻 (person) on the left;滑梯|huá tī|slide (playground)|🛝|滑 has 氵 (water): slippery! 梯 has 木 (wood);滑|huá|slippery|🧊|氵 (water) on the left: wet and slippery;玩|wán|play|🧸|王 on the left;爬|pá|climb|🧗|爪 (claw) on the left: climbing with claws;下|xià|down|⬇️|A short line BELOW the long line: down;坐|zuò|sit|🪑|Two people 人人 sitting on the ground 土;快|kuài|fast|💨|忄 (heart) on the left",
+      tb: "[香蕉]黄，香蕉绿。;香蕉[黄]，香蕉绿。;香蕉弯弯[像]滑梯。;香蕉弯弯像[滑梯]。;小蚂蚁，[玩]滑梯。;上去好像[爬]小山。;[下]来好像坐飞机。;下来好像[坐]飞机。;[快]快乐乐玩滑梯。",
+      nw: "我喜欢吃[香蕉]。;我们去公园[玩]。;下雨了，地很[滑]。",
+      rq: "小蚂蚁，玩滑梯，下来好像坐飞机。|小蚂蚁在玩什么？|滑梯|积木,飞机,小船|滑梯" },
+    { zh: "会唱歌的森林", en: "The Singing Forest",
+      w: "唱|chàng|sing|🎤|口 (mouth) on the left;里|lǐ|inside|📦|田 (field) on top of 土;很|hěn|very|💯|彳 on the left;每|měi|every|🔁|母 at the bottom;从|cóng|from|➡️|Two people 人人, one following the other;响|xiǎng|loud / ring|🔔|口 (mouth) on the left;落|luò|fall / drop|🍂|Grass 艹 on top: leaves falling;风|fēng|wind|🌬️|A sail blowing in the wind;听|tīng|listen|👂|口 (mouth) + 斤;座|zuò|seat|💺|广 (roof) on top, 坐 (sit) inside",
+      tb: "森林会[唱]歌吗？;森林[里]有很多小鸟。;森林里有[很]多小鸟。;[每]只小鸟都爱唱歌。;小鸟的歌，[从]这棵树响起。;从这棵树[响]起。;在那棵树[落]下。;每[座]森林都会唱歌。",
+      nw: "我爱[听]歌。;大[风]吹来了。",
+      rq: "森林里有很多小鸟，每只小鸟都爱唱歌。|每只小鸟都爱做什么？|唱歌|画画,睡觉,搬虫|唱" },
+    { zh: "识字三", en: "Opposites",
+      w: "对|duì|correct / pair with|✔️|又 + 寸: a hand doing it right;晴|qíng|sunny|🌞|日 (sun) on the left;伤|shāng|hurt|🤕|亻 (person) on the left;吵|chǎo|noisy / quarrel|📢|口 (mouth) + 少: lots of mouths;闹|nào|make a fuss|🥁|市 (market) inside a door 门: noisy like a market!;安|ān|calm / safe|🕊️|女 (woman) under a roof 宀: safe at home;静|jìng|quiet|🤫|青 + 争;怕|pà|afraid|😨|忄 (heart) on the left: a scared heart;空|kōng|empty / sky|☁️|穴 (hole) on top: empty;放|fàng|put / let go|🎈|攵 (hand) on the right;情|qíng|feeling|💞|忄 (heart) on the left: feelings",
+      tb: "雨[对]晴。;雨对[晴]。;[伤]心对开心。;[吵]闹对安静。;吵[闹]对[安]静。;大风大雨我不[怕]。;天[空]放晴好心情。;天空[放]晴好心情。;天空放晴好心[情]。",
+      nw: "上课了，大家很[安]静。;雨停了，是[晴]天。;森林里很安[静]。",
+      rq: "大风大雨我不怕，天空放晴好心情。|天空放晴了，心情怎么样？|很好|很怕,很伤心,很吵|情" },
+    { zh: "睡衣", en: "Pyjamas",
+      w: "夜|yè|night|🌃|夕 (evening moon) inside;悄悄|qiāo qiāo|quietly|🤫|忄 (heart) on the left: quiet heart;换|huàn|change / swap|🔄|扌 (hand) on the left: changing with hands;黑|hēi|black / dark|⚫|Four dots of fire at the bottom: black smoke;色|sè|colour|🎨|A person kneeling;衣|yī|clothes|👕|Looks like a shirt with a collar;最|zuì|most|🥇|日 on top;留|liú|stay / keep|📌|田 (field) at the bottom",
+      tb: "[夜]悄悄来了。;夜[悄悄]来了。;天空[换]上黑色睡衣。;天空换上[黑]色睡衣。;天空换上黑[色]睡[衣]。;只有我的睡衣[最]美丽。;把天空的蓝色[留]在睡衣上。",
+      nw: "[夜]里的天空是黑色的。;我[最]爱吃鱼。",
+      rq: "夜悄悄来了，天空换上黑色睡衣。|天空换上什么颜色的睡衣？|黑色|红色,绿色,黄色|黑" },
+    { zh: "铅笔", en: "My Pencil",
+      w: "用|yòng|use|🔧|Looks like a bucket;铅笔|qiān bǐ|pencil|✏️|铅 has 钅 (metal) on the left;发现|fā xiàn|discover|🔍|现 has 见 (see) on the right;慢|màn|slow|🐢|忄 (heart) on the left;白|bái|white|⚪|A dot of light on top of 日;文|wén|writing / language|📝|Looks like a person with patterns;图|tú|picture / map|🗺️|A big box: a picture frame;本|běn|notebook|📓|木 (tree) with a line at the root",
+      tb: "我[用]铅笔写字。;我用[铅笔]写字。;我[发现]写字就像画画。;[慢]慢地。;我明白了[文]字和[图]画本来是一家。",
+      nw: "我有一[本]书。;小羊是[白]色的。",
+      rq: "我用铅笔写字，也用铅笔画画。|我用什么写字？|铅笔|积木,剪刀,叶子|铅笔" },
+    { zh: "造小船", en: "Making Little Boats",
+      w: "金|jīn|gold|🥇|Looks like gold nuggets under a roof;沙|shā|sand|🏖️|氵 (water) + 少 (little): tiny bits by the water;沙滩|shā tān|beach|🏝️|Both have 氵 (water) on the left;银|yín|silver|🥈|钅 (metal) on the left;船|chuán|boat|⛵|舟 (boat) on the left;工具|gōng jù|tools|🧰|工 looks like a tool;简单|jiǎn dān|simple|👌|简 has 竹 (bamboo) on top;板|bǎn|board|🛹|木 (wood) on the left: a wooden board;看|kàn|look at / watch|👀|A hand 手 over the eye 目: looking far;身|shēn|body|🧍|Looks like a person standing sideways;后|hòu|back / after|🔙|口 inside;串|chuàn|string of beads|🍡|Two boxes on a stick, like satay!",
+      tb: "[金]沙滩，银沙滩。;金沙滩，[银]沙滩。;我在[沙滩]造小[船]。;[工具]呀，很[简单]。;就是一双小脚[板]。;我走走，你[看]看。;[身]后小船一串串。;身[后]小船一串串。;身后小船一[串]串。",
+      nw: "我们去[沙滩]玩[沙]。;爸爸有很多[工具]。",
+      rq: "金沙滩，银沙滩，我在沙滩造小船。|我在沙滩造什么？|小船|房子,城市,飞机|船" },
+    { zh: "叶子鸟", en: "Leaf Birds",
+      w: "公|gōng|public|🏞️|八 on top of 厶;轻|qīng|light (not heavy)|🪶|车 (cart) on the left;吹|chuī|blow|🌬️|口 (mouth) + 欠 (open mouth): blowing;叶|yè|leaf|🍃|口 + 十;飘|piāo|float / flutter|🍂|风 (wind) on the right: blown by wind;头|tóu|head|🙂|Two dots on top of 大;带|dài|bring / carry|🎒|巾 (cloth) at the bottom;拿|ná|take / hold|🤲|合 (together) on top of 手 (hand);剪|jiǎn|cut (scissors)|✂️|刀 (knife) at the bottom;刀|dāo|knife|🔪|Looks like a knife;贴|tiē|stick / paste|📎|贝 (shell) on the left;纸|zhǐ|paper|📄|纟 (silk) on the left: old paper was made like cloth",
+      tb: "[公]园里，风儿轻轻吹。;公园里，风儿[轻]轻吹。;风儿轻轻[吹]。;树[叶]轻轻地[飘]落。;有的飘落在我的[头]上。;我把一片片落叶[带]回家。;[拿]起剪刀剪剪贴贴。;拿起[剪][刀]剪剪贴贴。;剪剪[贴]贴。;就停留在我的画[纸]上。",
+      nw: "我用[剪]刀剪纸。;风[吹]来了，叶子飘落。",
+      rq: "我把一片片落叶带回家，拿起剪刀剪剪贴贴。|我把什么带回家？|落叶|小船,铅笔,积木|叶" }
   ]}
 ];
 
-// Power Check (placement / monthly checkpoint): 12 characters sampled from each year's textbook character table.
-// Standard 2–4 come from the 认读生字与习写生字表 at the back of each Tahun 2, 3 and 4 Bahasa Cina textbook.
+// Look-alike characters for "Spot the twin" (some twins are not on her word list; that's fine for recognition)
+window.TWINS = {
+  "大": "太天犬", "太": "大犬天", "天": "夫大无", "人": "入八个", "上": "下止土", "下": "上不卜", "小": "少尔水", "少": "小步沙",
+  "鸟": "乌马岛", "口": "日回中", "日": "目白田", "白": "百自日", "木": "本禾术", "本": "木体术", "手": "毛干午", "了": "子丁于",
+  "子": "了字于", "也": "他池地", "门": "们问闪", "月": "用肚有", "用": "月甩册", "见": "贝现儿", "风": "凤凡几", "出": "山击土",
+  "山": "出由仙", "青": "情晴请", "晴": "情请青", "情": "晴请青", "牙": "芽呀穿", "爪": "瓜爬抓", "瓜": "爪孤呱", "刀": "力刁万",
+  "早": "旱草平", "草": "早菜苹", "花": "化华苍", "树": "村对封", "地": "他也池", "来": "米未末", "去": "丢云法", "走": "足赶起",
+  "开": "井并升", "回": "四田日", "四": "西回匹", "五": "王互丑", "六": "大穴兴", "七": "匕也土", "三": "王二丰", "一": "二十丨",
+  "王": "玉主五", "羊": "美洋半", "美": "羊关姜", "爱": "受友发", "心": "必沁忆", "我": "找戈伐", "你": "他们尔", "家": "冢豕宝",
+  "学": "字觉孝", "字": "学子宇", "书": "韦为节", "写": "与马鸟", "笑": "竺芙关", "哥": "可歌司", "可": "哥司何", "好": "妈奸如",
+  "妈": "吗码马", "姐": "组如祖", "妹": "味未妈", "猫": "描苗喵", "虫": "中出蚊", "飞": "气乙也", "水": "木永冰", "头": "买实失",
+  "叶": "什吐计", "纸": "低红氏", "红": "江缸纸", "黑": "墨里默", "白": "自百伯", "坐": "座生垒", "座": "坐庄应", "快": "块筷决",
+  "吃": "乞吸气", "饭": "板反坂", "板": "饭版扳", "看": "着眉者", "身": "射穿躬", "后": "启右舌", "金": "全会令", "全": "金会王",
+  "船": "般舟航", "沙": "少抄炒", "河": "可何阿", "雨": "两而南", "两": "雨网丙", "画": "面西重", "笔": "毛竺等", "多": "夕名岁",
+  "明": "朋胡阴", "朋": "明月棚", "星": "生是晨", "是": "星足题", "中": "申口虫", "间": "问闲门", "近": "斤还远", "夜": "液衣亦",
+  "衣": "农表依", "色": "巴包争", "最": "取量是", "留": "流田窗", "文": "交又父", "图": "国团因", "游": "旅族放", "乐": "东朱尔"
+};
+
+// Power Check: 12 characters from each year's textbook character table (Standard 2–4 from the back of the Tahun 2, 3, 4 books)
 window.POWER = {
   1: "花|huā|flower;鸟|niǎo|bird;树|shù|tree;吃|chī|eat;鱼|yú|fish;家|jiā|home / family;雨|yǔ|rain;猫|māo|cat;脚|jiǎo|foot;飞|fēi|fly;船|chuán|boat;纸|zhǐ|paper",
   2: "邮|yóu|post / mail;糖|táng|sugar / sweets;浪|làng|wave (sea);午|wǔ|noon;瓶|píng|bottle;汤|tāng|soup;竹|zhú|bamboo;龙|lóng|dragon;猪|zhū|pig;雾|wù|fog;绳|shéng|rope;碗|wǎn|bowl",
   3: "梅|méi|plum blossom;橙|chéng|orange (fruit);肩|jiān|shoulder;驴|lǘ|donkey;针|zhēn|needle;兵|bīng|soldier;燕|yàn|swallow (bird);帆|fān|sail;袖|xiù|sleeve;锅|guō|wok / pot;勺|sháo|spoon;箭|jiàn|arrow",
   4: "摘|zhāi|pick (fruit);狐|hú|fox;岩|yán|rock;琴|qín|piano;塔|tǎ|tower;溪|xī|stream;腹|fù|belly;剑|jiàn|sword;荔|lì|lychee;铜|tóng|copper;尘|chén|dust;芋|yù|taro"
 };
+// Power Check fill-the-gap sentences (answer is one of that year's 12 characters)
+window.POWER_A = {
+  1: ["小[鸟]在树上唱歌。", "我家有一只[猫]。"],
+  2: ["我喜欢喝[汤]。", "熊猫爱吃[竹]子。"],
+  3: ["妈妈用[锅]做饭。", "[燕]子飞回来了。"],
+  4: ["我最爱吃[荔]枝。", "她每天弹钢[琴]。"]
+};
 
 window.parseWords = function (s) {
-  return s.split(";").map(function (x) { var p = x.split("|"); return { zh: p[0], py: p[1], en: p[2] }; });
+  return s.split(";").map(function (x) { var p = x.split("|"); return { zh: p[0], py: p[1], en: p[2], pic: p[3] || "", clue: p[4] || "" }; });
 };

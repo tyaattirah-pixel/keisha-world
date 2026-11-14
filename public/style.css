@@ -105,3 +105,19 @@ th{font-size:12px;color:#4a4a5e;border-top:none}
 .good{color:#1f7a35;font-weight:700;font-size:12px} .bad{color:#b42318;font-weight:700;font-size:12px}
 .toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 16px;border-radius:14px;font-weight:600;z-index:30;max-width:90%;text-align:center}
 .hidden{display:none!important}
+/* v2: three levels */
+.speak{width:96px;height:96px;border-radius:24px;background:var(--blue);border:3px solid var(--ink);box-shadow:0 6px 0 var(--ink),var(--bevel);font-size:44px}
+.pic{font-size:86px;line-height:1.1}
+.sent{font-size:26px;line-height:1.9;text-align:center;background:#f6f1ff;border-radius:12px;padding:6px 12px}
+.sent ruby{ruby-position:under} .sent rt{font-size:11px;color:#c2185b;font-family:Fredoka,sans-serif;font-weight:600}
+.blank{display:inline-block;min-width:60px;border-bottom:4px solid #7a3fd0;color:#7a3fd0;text-align:center}
+.srctag{font-size:12px;font-weight:700;border:2px solid var(--ink);border-radius:8px;padding:1px 8px}
+.srctag.tb{background:#fff4d1} .srctag.nw{background:#e9f2ff}
+.gl{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;font-size:13px}
+.gl span{background:#ffd6e8;border:2px solid var(--ink);border-radius:8px;padding:1px 6px}
+.clue{margin-top:14px;background:#e9f2ff;border:3px solid var(--ink);border-radius:18px;box-shadow:0 5px 0 var(--ink);padding:12px}
+.lvpill{display:inline-flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 6px;border-radius:8px;border:2px solid var(--ink);color:#fff;font-size:13px;font-weight:700;background:#fff}
+.lvpill.off{color:#9a9aae;border-color:#c8c8d4}
+.wrow{display:flex;align-items:center;gap:6px;width:100%;background:none;border:none;border-top:1px solid #e6e6ee;padding:8px 0;font-family:inherit}
+.opts.small .opt .zh{font-size:30px}
+.opt small.oen{font-size:12px}
