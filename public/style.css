@@ -121,3 +121,26 @@ th{font-size:12px;color:#4a4a5e;border-top:none}
 .wrow{display:flex;align-items:center;gap:6px;width:100%;background:none;border:none;border-top:1px solid #e6e6ee;padding:8px 0;font-family:inherit}
 .opts.small .opt .zh{font-size:30px}
 .opt small.oen{font-size:12px}
+/* v3: daily session, word cards */
+.rnd{display:flex;align-items:center;gap:8px;border:2px solid var(--ink);border-radius:12px;padding:6px 8px;margin-top:6px;background:#fff}
+.rnd.cur{background:#fff4d1} .rnd.done{background:#d8f7e0}
+.reward{display:flex;align-items:center;gap:10px;margin-top:8px;border:3px dashed #6a6a80;background:#eeeef3;border-radius:14px;padding:8px 10px;font-size:15px;line-height:1.2}
+.reward.ready{border:3px solid var(--ink);background:#fff4d1;box-shadow:0 4px 0 var(--ink)}
+.reward.ok{border:3px solid var(--ink);background:#d8f7e0}
+.reward small{color:#4a4a5e}
+.sheet-bg{position:fixed;inset:0;background:rgba(27,27,43,.45);z-index:15}
+.sheet{position:fixed;left:50%;bottom:0;transform:translateX(-50%);width:100%;max-width:480px;max-height:92vh;overflow:auto;background:#fff;border:3px solid var(--ink);border-bottom:none;border-radius:24px 24px 0 0;padding:14px 16px 22px;z-index:16;display:flex;flex-direction:column;gap:12px;animation:up .25s ease-out}
+@keyframes up{from{transform:translate(-50%,40px);opacity:0}}
+.wc-word{display:flex;align-items:center;gap:12px;background:#fff7d6;border:3px solid var(--ink);border-radius:18px;padding:8px 12px;box-shadow:0 4px 0 var(--ink)}
+.wc-word>.zh{font-size:52px;line-height:1.1}
+.wc-word .py{color:#c2185b;font-size:20px}
+.wc-sent{display:flex;flex-direction:column;gap:8px;border:3px solid var(--ink);border-radius:18px;padding:10px 12px;background:#f6f1ff}
+.rb{display:flex;flex-wrap:wrap;justify-content:center;gap:1px}
+.rc{display:inline-flex;flex-direction:column;align-items:center;min-width:28px}
+.rc i{font-style:normal;font-size:11px;font-weight:600;color:#c2185b}
+.rc b{font-family:var(--zh);font-size:24px;line-height:1.15}
+.rc.hi b{color:#7a3fd0;text-decoration:underline;text-decoration-thickness:3px}
+.rp{font-family:var(--zh);font-size:24px;align-self:flex-end;font-weight:700}
+.wc-en{text-align:center;font-size:16px}
+.srctag.life{background:#ffd6e8}
+.fun{border:3px solid var(--ink);border-radius:16px;padding:8px 12px;background:#e3f6ff;font-size:15px;line-height:1.35}

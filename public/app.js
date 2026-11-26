@@ -38,9 +38,9 @@
   var POWER_ITEMS = {}; Object.keys(POWER).forEach(function (y) { POWER_ITEMS[y] = parseWords(POWER[y]); });
 
   var RULES = {
-    perStage: 15, baseA: 3, maxA: 9,
+    perRound: 10, rounds: ["R", "C", "A"], dailyReward: 10,
     coin: { R: 3, C: 5, A: 7 }, hintCost: { R: 1, C: 3, A: 3 },
-    passScore: 12, passMaxHints: 4,
+    passScore: 24, passMaxHints: 8,
     speedFromStage: 7, speedMs: 5000,
     badgeDays: 2,
     missDaysPerPenalty: 3, penaltyCoins: 5,
@@ -61,7 +61,8 @@
       pet: null, petsOwned: [], petAcc: [],
       unlocked: 0, stageBest: {},
       checkin: { last: null, streak: 0, days: [], charged: 0 },
-      lastTestAt: 0, refunded: [], welcomed: false
+      lastTestAt: 0, refunded: [], welcomed: false,
+      session: null, doneDate: null, rewardDate: null
     };
   }
   var S = blank(), FLAGS = {}, HIST = [], CASH = [], ONLINE = false, PIN_SET = false;
@@ -219,7 +220,10 @@
   }
   function lobby() {
     app.className = "";
-    var c = S.checkin, today = dstr(), done = todayCount();
+    var c = S.checkin, today = dstr();
+    var sess = S.session && S.session.date === today ? S.session : null;
+    var doneToday = S.doneDate === today, canClaim = doneToday && S.rewardDate !== today;
+    var answered = doneToday ? RULES.perRound * 3 : sess ? sess.idx : 0;
     var now = new Date(), dow = (now.getDay() + 6) % 7, days = "";
     ["M", "T", "W", "T", "F", "S", "S"].forEach(function (l, i) {
       var d = new Date(now); d.setDate(now.getDate() - dow + i); var ds = dstr(d);
@@ -239,17 +243,24 @@
       '<div class="top"><div class="chip"><span class="lvl">Lv' + lvl + '</span>Keisha <span class="zh" style="font-size:15px">琦莎</span></div><div class="chip" style="font-size:19px">' + coin() + S.coins + "</div></div>" +
       '<div class="title" style="margin-top:8px">KEISHA’S WORLD</div><div class="zh" style="text-align:center;font-size:18px">琦莎的世界</div>' +
       (testDue() ? '<button class="btn yellow" id="pc" style="width:100%;margin-top:10px">⚡ Power Check ready! +' + RULES.testReward + " coins</button>" : "") +
-      '<div class="card" style="margin-top:10px;padding:10px 12px"><div class="spread" style="margin-bottom:8px"><b>Daily check-in</b><b>🔥 ' + (c.last && daysBetween(c.last, today) <= 1 ? c.streak : 0) + "-day streak</b></div>" +
-      '<div class="days">' + days + '</div><div class="notice spread" style="margin-top:8px"><span>Today: ' + Math.min(done, RULES.perStage) + " / " + RULES.perStage + ' words</span><span style="font-size:12px">Skip 3 days = lose ' + RULES.penaltyCoins + " coins</span></div></div>" +
+      '<div class="card" style="margin-top:10px;padding:10px 12px"><div class="spread" style="margin-bottom:8px"><b>Today’s session</b><b>🔥 ' + (c.last && daysBetween(c.last, today) <= 1 ? c.streak : 0) + "-day streak</b></div>" +
+      '<div class="days">' + days + '</div>' +
+      '<div class="spread" style="margin:8px 0 4px;font-size:14px;font-weight:600"><span>30 questions · about 15–20 min</span><span>' + answered + ' / 30</span></div>' +
+      RULES.rounds.map(function (L, r) { var d = Math.max(0, Math.min(RULES.perRound, answered - r * RULES.perRound)); return '<div class="rnd' + (d >= RULES.perRound ? " done" : answered >= r * RULES.perRound && !doneToday ? " cur" : "") + '"><span class="lvpill" style="background:' + LVL[L].color + '">' + L + '</span><span style="flex:1"><b>Round ' + (r + 1) + " · " + LVL[L].name + ' <span class="zh">' + LVL[L].zh + '</span></b><span class="mbar" style="display:block;margin-top:3px"><i style="width:' + d / RULES.perRound * 100 + "%;background:" + LVL[L].color + '"></i></span></span><b style="font-size:13px">' + d + "/" + RULES.perRound + "</b></div>"; }).join("") +
+      (canClaim ? '<div class="reward ready">🎁<span style="flex:1"><b>Daily reward ready!</b><br><small>Today’s session is done</small></span><button class="btn green" id="claim" style="color:#fff;-webkit-text-stroke:1px var(--ink)">CLAIM +' + RULES.dailyReward + "</button></div>"
+        : doneToday ? '<div class="reward ok">✅<span style="flex:1"><b>Daily reward claimed</b><br><small>Come back tomorrow!</small></span></div>'
+        : '<div class="reward">🎁<span style="flex:1"><b>Daily reward ' + coin() + " +" + RULES.dailyReward + '</b><br><small>Finish all 3 rounds to claim</small></span>🔒</div>') +
+      '<div class="muted" style="font-size:12px;margin-top:6px">Skip 3 days in a row = lose ' + RULES.penaltyCoins + " coins</div></div>" +
       '<div id="av" class="av-stage" style="height:250px;margin-top:4px"></div><div class="platform"></div>' +
       '<div class="card" style="margin-top:22px;padding:10px 12px"><div class="spread"><b>Island ' + (S.unlocked + 1) + ' · <span class="zh">' + cur.zh + "</span></b><span class=\"muted\">" + cur.en + '</span></div><div class="map" id="map">' + map + "</div></div>" +
-      '<div class="col" style="margin-top:16px;align-items:center"><button class="btn big green" id="play">PLAY</button>' +
+      '<div class="col" style="margin-top:16px;align-items:center"><button class="btn big green" id="play">' + (sess ? "CONTINUE · ROUND " + (Math.floor(sess.idx / RULES.perRound) + 1) : doneToday ? "PLAY AGAIN" : "START TODAY") + '</button>' +
       '<div class="row" style="width:100%"><button class="btn pink" style="flex:1" id="shop">Shop</button><button class="btn yellow" style="flex:1" id="cash">Cash out</button><button class="btn blue" style="flex:1" id="words">My words</button></div>' +
       '<button class="btn" id="mum" style="min-height:38px;font-size:14px;padding:4px 12px;box-shadow:0 3px 0 var(--ink)">🔒 Mummy</button></div>';
     mountAvatar("#av", { look: S.look, pet: S.pet, size: 0.95 });
     var curNode = app.querySelector(".node.cur"); if (curNode) curNode.scrollIntoView({ inline: "center", block: "nearest" });
-    $("#play").onclick = function () { startStage(Math.min(S.unlocked, STAGES.length - 1)); };
-    app.querySelectorAll(".node").forEach(function (n) { n.onclick = function () { var i = +n.dataset.s; if (i <= S.unlocked) startStage(i); else toast("Clear Island " + (S.unlocked + 1) + " first!"); }; });
+    $("#play").onclick = function () { if (sess) resumeSession(sess); else startStage(Math.min(S.unlocked, STAGES.length - 1)); };
+    if ($("#claim")) $("#claim").onclick = claimReward;
+    app.querySelectorAll(".node").forEach(function (n) { n.onclick = function () { var i = +n.dataset.s; if (i <= S.unlocked) { if (sess && sess.stage === i) resumeSession(sess); else startStage(i); } else toast("Clear Island " + (S.unlocked + 1) + " first!"); }; });
     $("#shop").onclick = function () { shop("hair"); };
     $("#cash").onclick = cashOut;
     $("#words").onclick = myWords;
@@ -337,21 +348,64 @@
   }
   function startStage(i) {
     var st = STAGES[i];
-    var cb = st.words.filter(function (w) { return stats(w.zh).bC; }).length / st.words.length;
-    var nA = Math.min(RULES.maxA, RULES.baseA + Math.round(cb * (RULES.maxA - RULES.baseA)));
-    var rest = RULES.perStage - nA, nR = Math.ceil(rest / 2), nC = rest - nR;
     var own = shuffle(st.words);
     var review = shuffle(ALL.filter(function (w) { return w.stage < i; })).sort(function (a, b) { return stats(b.zh).weak - stats(a.zh).weak; }).slice(0, 6);
     function pickWords(n, flag) {
       var pool = own.concat(review).slice().sort(function (a, b) { return (stats(a.zh)[flag] ? 1 : 0) - (stats(b.zh)[flag] ? 1 : 0); });
-      var out = []; for (var k = 0; k < n; k++) out.push(pool[k % pool.length]); return out;
+      var out = []; for (var k = 0; k < n; k++) out.push(pool[k % pool.length]); return shuffle(out);
     }
-    var qs = pickWords(nR, "bR").map(function (w) { return buildRC("R", w); }).concat(pickWords(nC, "bC").map(function (w) { return buildRC("C", w); }));
-    qs = shuffle(qs);
-    for (var k = 0; k < nA; k++) qs.push({ level: "A", pending: true });
-    G = { stage: i, qs: qs, idx: 0, score: 0, hints: 0, coins: 0, wrong: [], t0: Date.now(), cOk: {}, used: {}, badges: [] };
-    log("stage_start", null, { stage: i, mix: nR + "R" + nC + "C" + nA + "A" });
-    question();
+    var qs = pickWords(RULES.perRound, "bR").map(function (w) { return buildRC("R", w); })
+      .concat(pickWords(RULES.perRound, "bC").map(function (w) { return buildRC("C", w); }));
+    for (var k = 0; k < RULES.perRound; k++) qs.push({ level: "A", pending: true });
+    G = { stage: i, qs: qs, idx: 0, score: 0, hints: 0, coins: 0, wrong: [], t0: Date.now(), elapsed: 0, cOk: {}, used: {}, badges: [] };
+    log("stage_start", null, { stage: i, mix: "10R10C10A" });
+    saveSession();
+    roundIntro();
+  }
+  // ---- save / resume a session on the same day ----
+  function packQ(q) {
+    if (q.pending) return { level: "A", pending: true };
+    return { level: q.level, type: q.type, w: q.w ? q.w.zh : null, key: q.key || null, item: q.item ? q.item.id : null, answer: q.answer || null, opts: q.opts.map(function (o) { return o.zh; }) };
+  }
+  function unpackQ(p) {
+    if (p.pending) return { level: "A", pending: true };
+    var q = { level: p.level, type: p.type, w: BY_ZH[p.w] || { zh: p.w, py: "", en: "" }, key: p.key, answer: p.answer };
+    if (p.item) { q.item = ALL_GAPS.concat(ALL_RQS).filter(function (x) { return x.id === p.item; })[0]; }
+    q.opts = p.opts.map(function (z) {
+      if (p.type === "rq") return { zh: z, text: z };
+      if (p.type === "gap") return { zh: z, text: z, w: BY_ZH[z] };
+      return BY_ZH[z] || { zh: z, py: "", en: "" };
+    });
+    return q;
+  }
+  function saveSession() {
+    if (!G) return;
+    S.session = { date: dstr(), stage: G.stage, idx: G.idx, qs: G.qs.map(packQ), score: G.score, hints: G.hints, coins: G.coins, wrong: G.wrong.map(function (w) { return w && w.zh; }), elapsed: G.elapsed + (Date.now() - G.t0), cOk: G.cOk, used: G.used, badges: G.badges };
+    save();
+  }
+  function resumeSession(ss) {
+    G = { stage: ss.stage, qs: ss.qs.map(unpackQ), idx: ss.idx, score: ss.score, hints: ss.hints, coins: ss.coins, wrong: ss.wrong.map(function (z) { return BY_ZH[z]; }).filter(Boolean), t0: Date.now(), elapsed: ss.elapsed || 0, cOk: ss.cOk || {}, used: ss.used || {}, badges: ss.badges || [] };
+    log("stage_resume", null, { stage: G.stage, at: G.idx });
+    roundIntro();
+  }
+  function roundIntro() {
+    var r = Math.floor(G.idx / RULES.perRound), L = RULES.rounds[r], info = LVL[L];
+    var what = { R: "Can you spot the right character? Listen, look closely, and use the Character clue if you need it.", C: "Do you know what it means? Words, meanings and pictures.", A: "Can you use it? Fill the gap and read short sentences." }[L];
+    app.className = ""; document.body.style.background = "";
+    app.innerHTML = '<div class="col" style="align-items:center;text-align:center;padding-top:40px">' +
+      '<div class="title">ROUND ' + (r + 1) + "</div>" +
+      '<div class="card col" style="align-items:center;width:100%"><span class="lvpill" style="background:' + info.color + ';font-size:26px;min-width:56px;height:56px;border-radius:16px">' + L + "</span>" +
+      '<b style="font-size:24px">' + info.name + ' <span class="zh">' + info.zh + "</span></b><span>" + what + '</span><span class="muted">' + (G.idx % RULES.perRound) + " / " + RULES.perRound + " done · Island " + (G.stage + 1) + ' <span class="zh">' + STAGES[G.stage].zh + "</span></span></div>" +
+      '<button class="btn big green" id="go">' + (G.idx % RULES.perRound ? "CONTINUE" : "GO!") + '</button><button class="btn" id="home" style="width:100%">Back to lobby</button></div>';
+    $("#go").onclick = function () { G.t0 = Date.now(); question(); };
+    $("#home").onclick = function () { saveSession(); G = null; lobby(); };
+  }
+  function claimReward() {
+    var t = dstr(); if (S.doneDate !== t || S.rewardDate === t) return;
+    S.rewardDate = t; S.coins += RULES.dailyReward; save();
+    log("daily_reward", null, { coins: RULES.dailyReward });
+    confetti(); toast("+" + RULES.dailyReward + " coins! See you tomorrow 🌟");
+    lobby();
   }
   var HINTS = {
     hear: [["py", "Aa", "Pinyin"], ["slow", "🐢", "Hear slowly"], ["clue", "🔍", "Character clue"]],
@@ -379,7 +433,7 @@
   }
   function question() {
     var q = G.qs[G.idx];
-    if (q.pending) { q = G.qs[G.idx] = chooseA(G.stage); }
+    if (q.pending) { q = G.qs[G.idx] = chooseA(G.stage); saveSession(); }
     q.hints = []; q.t0 = Date.now(); q.done = false;
     var w = q.w, L = LVL[q.level], pct = Math.round(G.idx / G.qs.length * 100), prompt = "", optHtml;
     var label = { hear: "Listen. Which character is it?", twin: "Spot the twin! Which one is…", zh2en: "What does this mean?", en2zh: "Which one means…", pic: "这是什么？ <small>(What is this?)</small>", gap: "Fill the gap", rq: "Read, then answer" }[q.type];
@@ -457,20 +511,52 @@
     var detail = q.level === "A"
       ? (q.item.full ? '<span class="zh">' + esc(q.item.full) + "</span>" : '<span class="zh">' + esc(q.answer) + "</span>")
       : '<span class="zh">' + w.zh + "</span> " + w.py + " = " + esc(w.en);
-    $("#fb").innerHTML = '<div class="feedback" style="background:' + (ok ? "#c9f5d4" : "#ffe1e1") + '"><div style="flex:1">' +
-      (ok ? (nh ? "Correct!" : ["Yes! First try!", "Amazing!", "So smart!", "Perfect!"][Math.floor(Math.random() * 4)]) : "Not quite!") + "<br>" + detail +
+    saveSessionAfterAnswer();
+    var head = '<div class="feedback" style="background:' + (ok ? "#c9f5d4" : "#ffe1e1") + '"><div style="flex:1">' +
+      (ok ? (nh ? "Correct!" : ["Yes! First try!", "Amazing!", "So smart!", "Perfect!"][Math.floor(Math.random() * 4)]) : "Not quite! Here’s the word:") +
+      (q.level === "A" && q.item.full ? '<br><span class="zh" style="font-size:16px">' + esc(q.item.full) + "</span>" : "") +
       (speed ? "<br><small>⚡ Speed bonus!</small>" : "") + (newBadge ? '<br><b style="color:' + LVL[newBadge].color + '">🏅 New ' + LVL[newBadge].name + " badge for " + key + "!</b>" : "") + "</div>" +
-      '<b style="white-space:nowrap">' + coin() + "+" + earned + "</b></div>" +
-      '<button class="btn big green" id="next" style="margin-top:14px">' + (G.idx + 1 < G.qs.length ? "NEXT" : "FINISH") + "</button>";
-    $("#next").onclick = function () { G.idx++; if (G.idx < G.qs.length) question(); else endStage(); };
+      '<b style="white-space:nowrap">' + coin() + "+" + earned + "</b></div>";
+    showWordCard(head, key);
+  }
+  function saveSessionAfterAnswer() { G.idx++; saveSession(); G.idx--; }
+  function rubyHtml(s, py, key) {
+    var syl = py.split(" "), i = 0, hi = {}, at = key ? s.indexOf(key) : -1;
+    if (at >= 0) for (var k = 0; k < key.length; k++) hi[at + k] = 1;
+    return s.split("").map(function (c, n) {
+      if (/[\u4e00-\u9fff]/.test(c)) { var p = syl[i++] || ""; return '<span class="rc' + (hi[n] ? " hi" : "") + '"><i>' + p + "</i><b>" + c + "</b></span>"; }
+      return '<span class="rp">' + c + "</span>";
+    }).join("");
+  }
+  function showWordCard(head, key) {
+    var w = BY_ZH[key], L = window.LIFE && LIFE[key];
+    var html = '<div class="sheet-bg"></div><div class="sheet">' + head +
+      (w ? '<div class="wc-word"><span class="zh">' + w.zh + '</span><div style="flex:1;line-height:1.15"><b class="py">' + w.py + '</b><br><b style="font-size:18px">' + esc(w.en) + '</b></div><button class="btn blue" id="sw" aria-label="Hear the word" style="min-height:44px;width:48px;padding:0">🔊</button></div>' : "") +
+      (L ? '<div class="wc-sent"><div class="spread"><b>In a sentence</b><span class="srctag ' + (L[3] ? "nw" : "life") + '">' + (L[3] ? "Everyday Chinese" : "Keisha’s life") + '</span></div><div class="rb">' + rubyHtml(L[0], L[1], key) + '</div><div class="wc-en">“' + esc(L[2]) + '”</div><button class="btn blue" id="ss" style="min-height:40px;font-size:14px;align-self:center">🔊 Hear sentence</button></div>' : "") +
+      (window.FUN && FUN[key] ? '<div class="fun">💡 <b>Fun fact:</b> ' + esc(FUN[key]) + "</div>" : "") +
+      '<button class="btn big green" id="next">' + (G.idx + 1 < G.qs.length ? "NEXT" : "FINISH") + "</button></div>";
+    layer.innerHTML = html;
+    if (w) document.getElementById("sw").onclick = function () { speak(w.zh); };
+    if (L) document.getElementById("ss").onclick = function () { speak(L[0]); };
+    log("card", key, { life: L ? 1 : 0 });
+    document.getElementById("next").onclick = function () {
+      layer.innerHTML = "";
+      var prevRound = Math.floor(G.idx / RULES.perRound);
+      G.idx++;
+      if (G.idx >= G.qs.length) return endStage();
+      if (Math.floor(G.idx / RULES.perRound) !== prevRound) { G.elapsed += Date.now() - G.t0; saveSession(); return roundIntro(); }
+      question();
+    };
   }
   function quitAsk() {
-    modal('<b style="font-size:20px">Leave this stage?</b><p>Your coins so far are kept, but the stage won’t count.</p><div class="row"><button class="btn" id="mno" style="flex:1">Keep playing</button><button class="btn pink" id="myes" style="flex:1">Leave</button></div>');
+    modal('<b style="font-size:20px">Take a break?</b><p>Your progress is saved. You can continue from here later today.</p><div class="row"><button class="btn" id="mno" style="flex:1">Keep playing</button><button class="btn pink" id="myes" style="flex:1">Pause</button></div>');
     document.getElementById("mno").onclick = closeModal;
-    document.getElementById("myes").onclick = function () { closeModal(); log("quit", null, { stage: G.stage, at: G.idx, ms: Date.now() - G.t0 }); G = null; lobby(); };
+    document.getElementById("myes").onclick = function () { closeModal(); log("quit", null, { stage: G.stage, at: G.idx, ms: Date.now() - G.t0 }); G.elapsed += Date.now() - G.t0; G.t0 = Date.now(); saveSession(); G = null; lobby(); };
   }
   function endStage() {
-    var ms = Date.now() - G.t0, i = G.stage, prev = S.stageBest[i];
+    var ms = G.elapsed + (Date.now() - G.t0), i = G.stage, prev = S.stageBest[i];
+    S.session = null;
+    var firstToday = S.doneDate !== dstr(); S.doneDate = dstr();
     var passed = G.score >= RULES.passScore && G.hints <= RULES.passMaxHints;
     var firstClear = passed && i === S.unlocked && i + 1 < STAGES.length;
     if (firstClear) S.unlocked = i + 1;
@@ -480,7 +566,7 @@
     HIST.slice(-G.qs.length).forEach(function (e) { var L = levelOf(e); if (e.type === "answer" && L && byL[L]) { byL[L][1]++; if (e.correct) byL[L][0]++; } });
     log("stage_end", null, { stage: i, score: G.score, hints: G.hints, ms: ms, coins: G.coins, passed: passed ? 1 : 0, byLevel: byL });
     save();
-    var stars = G.score >= 14 ? 3 : G.score >= RULES.passScore ? 2 : G.score >= 8 ? 1 : 0;
+    var stars = G.score >= 28 ? 3 : G.score >= RULES.passScore ? 2 : G.score >= 18 ? 1 : 0;
     var starSvg = function (on, s) { return '<svg width="' + s + '" height="' + s + '" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.9 6 6.6.9-4.8 4.6 1.2 6.5L12 17.4l-5.9 3.1 1.2-6.5L2.5 9.4l6.6-.9z" fill="' + (on ? "#ffc93c" : "#e6e6ee") + '" stroke="#1b1b2b" stroke-width="1.6" stroke-linejoin="round"/></svg>'; };
     var lastMs = prev ? prev.lastMs || prev.ms : null;
     var wrongUniq = []; G.wrong.forEach(function (w) { if (w && wrongUniq.indexOf(w) < 0) wrongUniq.push(w); });
@@ -500,9 +586,11 @@
       (wrongUniq.length ? '<div class="card" style="width:100%"><b>Train these again</b><div class="row" style="flex-wrap:wrap;margin-top:6px">' + wrongUniq.map(function (w) { return '<button class="chip zh" style="font-size:22px" data-say="' + w.zh + '">' + w.zh + "</button>"; }).join("") + "</div></div>" : "") +
       (passed ? (firstClear ? '<div class="chip" style="background:var(--green)">✓ Island ' + (i + 2) + " unlocked!</div>" : "") : '<div class="card" style="width:100%;background:#ffe1e1">To clear: <b>' + RULES.passScore + "+ correct</b> with <b>" + RULES.passMaxHints + " hints or fewer</b>. Try again!</div>") +
       (checked ? '<div class="chip">🔥 Checked in for today!</div>' : "") +
-      '<button class="btn big green" id="again">' + (passed && i + 1 < STAGES.length ? "NEXT STAGE" : "TRY AGAIN") + '</button><button class="btn" id="home" style="width:100%">Back to lobby</button></div>';
+      (S.rewardDate !== dstr() ? '<div class="reward ready" style="width:100%">🎁<span style="flex:1"><b>Daily reward ready!</b></span><button class="btn green" id="claim2" style="color:#fff;-webkit-text-stroke:1px var(--ink)">CLAIM +' + RULES.dailyReward + "</button></div>" : "") +
+      '<button class="btn big green" id="again">' + (passed && i + 1 < STAGES.length ? "NEXT ISLAND" : "PLAY AGAIN") + '</button><button class="btn" id="home" style="width:100%">Back to lobby</button></div>';
     app.querySelectorAll("[data-say]").forEach(function (b) { b.onclick = function () { speak(b.dataset.say); var w = BY_ZH[b.dataset.say]; toast(w.zh + " " + w.py + " = " + w.en); }; });
     if (passed) confetti();
+    if ($("#claim2")) $("#claim2").onclick = function () { document.body.style.background = ""; claimReward(); };
     $("#again").onclick = function () { document.body.style.background = ""; startStage(passed && i + 1 < STAGES.length ? i + 1 : i); };
     $("#home").onclick = function () { document.body.style.background = ""; lobby(); };
     G = null;
@@ -743,8 +831,9 @@
       var hints = ans.reduce(function (s, e) { return s + (e.hints || 0); }, 0);
       var ms = ans.reduce(function (s, e) { return s + (e.ms || 0); }, 0);
       var coins = ans.reduce(function (s, e) { return s + (e.coins || 0); }, 0);
-      var stages = ev.filter(function (e) { return e.type === "stage_end" && e.passed && e.ts >= a && e.ts < b; }).length;
-      return { days: Object.keys(days).length, n: n, first: n ? Math.round(first / n * 100) : null, hints: n ? (hints / n).toFixed(1) : null, ms: n ? (ms / n / 1000).toFixed(1) : null, coins: coins, stages: stages };
+      var ends = ev.filter(function (e) { return e.type === "stage_end" && e.ts >= a && e.ts < b; });
+      var stages = ends.length, mins = Math.round(ends.reduce(function (t, e) { return t + (e.ms || 0); }, 0) / 60000);
+      return { days: Object.keys(days).length, n: n, first: n ? Math.round(first / n * 100) : null, hints: n ? (hints / n).toFixed(1) : null, ms: n ? (ms / n / 1000).toFixed(1) : null, coins: coins, stages: stages, mins: mins };
     }
     var tw = weekStats(wkStart, Infinity), lw = weekStats(lwStart, wkStart);
     function wrow(label, a, b, higherBetter, unit) {
@@ -810,7 +899,7 @@
       '<span class="muted">Keisha · coins now: <b>' + ((data.state || S).coins) + "</b> · Island " + (((data.state || S).unlocked || 0) + 1) + " of " + STAGES.length + " · " + (ONLINE ? "saved online" : "saved on this device only") + "</span>" +
       '<div class="sec"><h3>This week vs last week</h3><table><tr><th></th><th>Last wk</th><th>This wk</th><th></th></tr>' +
       wrow("Days checked in", lw.days, tw.days, true) + wrow("Questions answered", lw.n, tw.n, true) + wrow("Right on first try", lw.first, tw.first, true, "%") +
-      wrow("Hints per question", lw.hints, tw.hints, false) + wrow("Avg time per answer", lw.ms, tw.ms, false, "s") + wrow("Stages cleared", lw.stages, tw.stages, true) + wrow("Coins earned", lw.coins, tw.coins, true) +
+      wrow("Hints per question", lw.hints, tw.hints, false) + wrow("Avg time per answer", lw.ms, tw.ms, false, "s") + wrow("Sessions finished", lw.stages, tw.stages, true) + wrow("Minutes in sessions", lw.mins, tw.mins, true) + wrow("Coins earned", lw.coins, tw.coins, true) +
       '</table><span class="muted">Master words so far (all three badges): <b>' + mastered + "</b> of " + ALL.length + "</span></div>" +
       '<div class="sec"><div class="spread"><h3>Level vs school syllabus</h3><span class="muted" style="font-size:12px">' + (lastTest ? "Power Check " + fmtDate(lastTest.ts) : "") + "</span></div>" +
       '<span class="muted">Share of each year’s textbook characters she can read (lucky guesses removed)</span>' + testHtml +

@@ -12,9 +12,11 @@ Runs on Cloudflare Workers, with progress saved in a Cloudflare D1 database.
 | **Recognition 认读** | Hear & pick (sound-alike choices) and Spot the twin (look-alike characters). Hints: Pinyin / Hear slowly / Character clue. +3 coins, −1 per hint. |
 | **Comprehension 理解** | 中文 → English, English → 中文, and picture match with no English. Hints: Pinyin / Hear it / Translate. +5 coins, −3 per hint. |
 | **Application 运用** | Fill the gap (textbook sentences first, then new sentences using only her words) and Read & answer. Hints: Hear sentence / Key words / Translate. +7 coins, −3 per hint. |
-| **Stage mix** | 6 R + 6 C + 3 A at first; more Application as she earns Comprehension badges (up to 9). Application only uses words she has got right in Comprehension. |
+| **Daily session** | One session a day: Round 1 Recognition → Round 2 Comprehension → Round 3 Application, 10 questions each (about 15–20 min). She can pause and continue the same day. |
+| **Word cards** | After every answer: the word with pinyin and meaning, an everyday-life sentence (Keisha & Mum, ramen, school run, travel, art & craft) with pinyin over each character and an English translation, plus a fun fact for many words. Sentences in `public/life.js`, fun facts in `public/funfacts.js`. |
+| **Daily reward** | +10 coins, claimed after finishing all 3 rounds. Finishing the session also counts as the day’s check-in. |
 | **Badges** | Per word, in order R → C → A: 2 right answers with no hints on 2 different days. All three = MASTER word. |
-| **Stage gate** | 12/15 correct with 4 hints or fewer unlocks the next island. Time per stage is compared with the last try. Speed bonus +1 from Stage 7. |
+| **Island gate** | 24/30 correct with 8 hints or fewer unlocks the next island. Time per stage is compared with the last try. Speed bonus +1 from Stage 7. |
 | **Daily check-in** | Finishing a stage checks in for the day. Every 3 days missed in a row = −5 coins. |
 | **Shop** | 3D avatar (drag to spin): hair colour and style, tops, skirts, headphones, pets with Chinese names, pet accessories. |
 | **Cash out** | 100 coins = RM 1. Keisha asks, Mummy marks Paid or Not now (coins go back). All dated. |
