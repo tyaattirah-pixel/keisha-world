@@ -922,6 +922,8 @@
       mixes.map(function (k) { var p = k.split("→"); return '<tr><td>Mixed up <span class="zh">' + p[0] + '</span> with <span class="zh">' + p[1] + "</span></td><td><b>" + mix[k] + "×</b></td></tr>"; }).join("") +
       "<tr><td>Still remembers words after 7+ days</td><td><b>" + (ret.n ? Math.round(ret.ok / ret.n * 100) + "%" : "–") + "</b>" + (ret.n ? ' <span class="muted" style="font-size:11px">(' + ret.n + " words)</span>" : "") + "</td></tr>" +
       Object.keys(hours).map(function (b) { var x = hours[b]; return "<tr><td>" + b + " accuracy</td><td><b>" + Math.round(x.ok / x.n * 100) + '%</b> <span class="muted" style="font-size:11px">(' + x.n + ")</span></td></tr>"; }).join("") +
+      (function () { var aw = ev.filter(function (e) { return e.type === "away"; }), wk = aw.filter(function (e) { return e.ts >= wkStart; });
+        return "<tr><td>Left the app during a question <span class=\"muted\" style=\"font-size:11px\">(may be looking it up)</span></td><td><b>" + wk.length + "× this week</b>" + (aw.length ? ' <span class="muted" style="font-size:11px">' + aw.length + " total, last: " + esc(aw[aw.length - 1].item || "") + " for " + aw[aw.length - 1].secs + "s</span>" : "") + "</td></tr>"; })() +
       "<tr><td>Stages she quit before finishing</td><td><b>" + quits.length + "</b>" + (quits.length ? ' <span class="muted" style="font-size:11px">mostly at question ' + Math.round(quits.reduce(function (s, q) { return s + (q.at || 0) + 1; }, 0) / quits.length) + "</span>" : "") + "</td></tr></table></div>" +
       '<div class="sec"><div class="spread"><h3>Help log</h3><span class="muted" style="font-size:12px">every tap is saved</span></div>' + (helps.length ? '<table><tr><th>When</th><th>Word</th><th>Help</th><th>Then</th></tr>' + helps.map(function (h) { var n = HN[h.hint] || [h.hint, "#eee"]; var d = new Date(h.ts); return "<tr><td style=\"font-size:12px\">" + d.toLocaleDateString("en-GB", { day: "numeric", month: "short" }) + " " + d.toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" }) + '</td><td class="zh">' + h.item + '</td><td><span style="background:' + n[1] + ';border-radius:6px;padding:1px 6px;font-size:12px;font-weight:700">' + n[0] + "</span></td><td>" + resultFor(h) + "</td></tr>"; }).join("") + "</table>" : '<span class="muted">No help taps yet.</span>') +
       '<button class="btn" id="copy" style="min-height:40px;font-size:14px">Copy all data for analysis</button><textarea id="dump" class="hidden" style="width:100%;height:80px;font-size:11px"></textarea></div>' +
@@ -964,6 +966,20 @@
     };
   }
 
+  // block the long-press / right-click menu during play (no copy or "Translate" on the questions)
+  document.addEventListener("contextmenu", function (e) { if (G || T) e.preventDefault(); });
+  document.addEventListener("copy", function (e) { if (G || T) e.preventDefault(); });
+  // note when she leaves the app while a question is on screen (e.g. to look something up)
+  var awayAt = 0, awayQ = null;
+  document.addEventListener("visibilitychange", function () {
+    var q = G && G.qs[G.idx], tq = T && T.order[T.idx];
+    if (document.hidden) {
+      if ((q && !q.done && !q.pending) || tq) { awayAt = Date.now(); awayQ = q ? (q.key || (q.w && q.w.zh)) : tq.w.zh; }
+    } else if (awayAt) {
+      log("away", awayQ, { secs: Math.round((Date.now() - awayAt) / 1000), during: T ? "test" : "game" });
+      awayAt = 0; awayQ = null;
+    }
+  });
   if (/debug/.test(location.search)) window.__kwG = function () { return G; };
   boot();
 })();
