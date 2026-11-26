@@ -62,7 +62,7 @@
       unlocked: 0, stageBest: {},
       checkin: { last: null, streak: 0, days: [], charged: 0 },
       lastTestAt: 0, refunded: [], welcomed: false,
-      session: null, doneDate: null, rewardDate: null
+      session: null, doneDate: null, rewardDate: null, usage: {}
     };
   }
   var S = blank(), FLAGS = {}, HIST = [], CASH = [], ONLINE = false, PIN_SET = false;
@@ -883,6 +883,12 @@
       return { days: Object.keys(days).length, n: n, first: n ? Math.round(first / n * 100) : null, hints: n ? (hints / n).toFixed(1) : null, ms: n ? (ms / n / 1000).toFixed(1) : null, coins: coins, stages: stages, mins: mins };
     }
     var tw = weekStats(wkStart, Infinity), lw = weekStats(lwStart, wkStart);
+    var U = (data.state && data.state.usage) || {};
+    var usageMin = function (a, b) { var t = 0; Object.keys(U).forEach(function (d) { var ts = new Date(d + "T00:00:00").getTime(); if (ts >= a && ts < b) t += U[d]; }); return Math.round(t / 60); };
+    tw.app = usageMin(wkStart, Infinity); lw.app = usageMin(lwStart, wkStart);
+    var last7 = []; for (var dd = 6; dd >= 0; dd--) { var day = new Date(now.getFullYear(), now.getMonth(), now.getDate() - dd); var k = dstr(day); last7.push({ k: k, lbl: day.toLocaleDateString("en-GB", { weekday: "short" }), m: Math.round((U[k] || 0) / 60) }); }
+    var maxM = Math.max(20, Math.max.apply(null, last7.map(function (x) { return x.m; })));
+    var played = last7.filter(function (x) { return x.m > 0; }), avgM = played.length ? Math.round(played.reduce(function (t, x) { return t + x.m; }, 0) / played.length) : 0;
     function wrow(label, a, b, higherBetter, unit) {
       unit = unit || "";
       var cmp = a == null || b == null ? "" : Number(b) === Number(a) ? '<span class="muted" style="font-size:12px">same</span>' : (Number(b) > Number(a)) === higherBetter ? '<span class="good">better</span>' : '<span class="bad">lower</span>';
@@ -948,8 +954,12 @@
       '<span class="muted">Keisha · coins now: <b>' + ((data.state || S).coins) + "</b> · Island " + (((data.state || S).unlocked || 0) + 1) + " of " + STAGES.length + " · " + (ONLINE ? "saved online" : "saved on this device only") + "</span>" +
       '<div class="sec"><h3>This week vs last week</h3><table><tr><th></th><th>Last wk</th><th>This wk</th><th></th></tr>' +
       wrow("Days checked in", lw.days, tw.days, true) + wrow("Questions answered", lw.n, tw.n, true) + wrow("Right on first try", lw.first, tw.first, true, "%") +
-      wrow("Hints per question", lw.hints, tw.hints, false) + wrow("Avg time per answer", lw.ms, tw.ms, false, "s") + wrow("Sessions finished", lw.stages, tw.stages, true) + wrow("Minutes in sessions", lw.mins, tw.mins, true) + wrow("Coins earned", lw.coins, tw.coins, true) +
+      wrow("Hints per question", lw.hints, tw.hints, false) + wrow("Avg time per answer", lw.ms, tw.ms, false, "s") + wrow("Sessions finished", lw.stages, tw.stages, true) + wrow("Minutes in sessions", lw.mins, tw.mins, true) + wrow("Minutes on the app", lw.app, tw.app, true) + wrow("Coins earned", lw.coins, tw.coins, true) +
       '</table><span class="muted">Master words so far (all three badges): <b>' + mastered + "</b> of " + ALL.length + "</span></div>" +
+      '<div class="sec"><div class="spread"><h3>Time on the app</h3><span class="muted" style="font-size:12px">only while open on screen</span></div>' +
+      '<div class="spread"><span>Today: <b>' + last7[6].m + ' min</b></span><span>Avg on days played: <b>' + avgM + ' min</b></span></div>' +
+      '<div class="tchart">' + last7.map(function (x) { return '<div class="tcol"><span class="tval">' + (x.m || "") + '</span><i style="height:' + Math.round(x.m / maxM * 100) + "%;background:" + (x.m >= 15 ? "#2b8a3e" : x.m > 0 ? "#e8890c" : "#e6e6ee") + '"></i><span class="tlbl">' + x.lbl + "</span></div>"; }).join("") + "</div>" +
+      '<span class="muted" style="font-size:12px">Green = 15 min or more (a full daily session is about 15–20 min).</span></div>' +
       '<div class="sec"><div class="spread"><h3>Level vs school syllabus</h3><span class="muted" style="font-size:12px">' + (lastTest ? "Power Check " + fmtDate(lastTest.ts) : "") + "</span></div>" +
       '<span class="muted">Share of each year’s textbook characters she can read (lucky guesses removed)</span>' + testHtml +
       '<div class="notice"><b>Working level:</b> ' + working + " · <b>Target:</b> Standard 5</div>" +
@@ -1031,6 +1041,16 @@
       awayAt = 0; awayQ = null;
     }
   });
+  // ---- time on the app: counts only while the app is open on screen ----
+  var USAGE_STEP = 15, usageN = 0;
+  setInterval(function () {
+    if (document.hidden || !S) return;
+    var d = dstr(); S.usage = S.usage || {};
+    S.usage[d] = (S.usage[d] || 0) + USAGE_STEP;
+    var keys = Object.keys(S.usage).sort(); while (keys.length > 120) delete S.usage[keys.shift()];
+    usageN++; if (usageN % 4 === 0) save(); else lsSet(LS.state, S);
+  }, USAGE_STEP * 1000);
+  document.addEventListener("visibilitychange", function () { if (document.hidden) save(); });
   if (/debug/.test(location.search)) window.__kwG = function () { return G; };
   boot();
 })();

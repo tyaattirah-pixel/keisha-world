@@ -20,7 +20,7 @@ Runs on Cloudflare Workers, with progress saved in a Cloudflare D1 database.
 | **Daily check-in** | Finishing a stage checks in for the day. Every 3 days missed in a row = −5 coins. |
 | **Shop** | 3D avatar (drag to spin): hair colour and style, tops, skirts, headphones, pets with Chinese names, pet accessories. |
 | **Cash out** | 100 coins = RM 1. Keisha asks, Mummy marks Paid or Not now (coins go back). All dated. |
-| **Mummy's Corner** | PIN-locked: week vs last week, level vs syllabus, understanding levels (R/C/A) and the gaps between them, best hint per level, textbook vs new sentences, struggling words, mix-ups, 7-day memory, best time of day, quits, help log, cash requests, data export. |
+| **Mummy's Corner** | PIN-locked: week vs last week, time on the app per day (last 7 days), level vs syllabus, understanding levels (R/C/A) and the gaps between them, best hint per level, textbook vs new sentences, struggling words, mix-ups, 7-day memory, best time of day, quits, help log, cash requests, data export. |
 
 ## Files
 
