@@ -300,6 +300,11 @@
     if (level === "R") {
       type = TWINS[w.zh] && (Math.random() < 0.5 || !canSpeak()) ? "twin" : "hear";
       opts = type === "twin" ? twinsOf(w) : soundAlike(w);
+    } else if (window.LIFE && LIFE[w.zh]) {
+      type = "ctx";
+      var sent = LIFE[w.zh][0];
+      var inSent = Object.keys(BY_ZH).filter(function (z) { return z !== w.zh && sent.indexOf(z) >= 0 && z.indexOf(w.zh) < 0 && w.zh.indexOf(z) < 0; }).map(function (z) { return BY_ZH[z]; });
+      opts = pickN([inSent, near(w), ALL], 3, w);
     } else {
       var r = Math.random();
       type = w.pic && r < 0.3 ? "pic" : r < 0.65 ? "zh2en" : "en2zh";
@@ -325,6 +330,37 @@
   }
   function itemsFor(word) {
     return ALL_GAPS.filter(function (g) { return g.ans === word; }).concat(ALL_RQS.filter(function (r) { return r.word === word; }));
+  }
+  // "Which sentence uses the word correctly?" — wrong sentences are real sentences with the word in the wrong place
+  var SAME = ["走跑跳爬飞去来进回出到坐", "看瞧见听嗅", "大小多少长短胖肥重轻快慢早晚老", "蓝绿红黄白黑金银青", "一两三四五六七", "我你妈爸哥姐妹", "鸟猫羊鹅鱼虫蜂"];
+  function sameGroup(a, b) { return SAME.some(function (g) { return a.length === 1 && b.length === 1 && g.indexOf(a) >= 0 && g.indexOf(b) >= 0; }); }
+  function choosePick(stageIdx) {
+    if (!window.LIFE) return null;
+    var st = STAGES[stageIdx];
+    var ok = Object.keys(G.cOk).concat(st.words.filter(function (w) { return stats(w.zh).cRight > 0; }).map(function (w) { return w.zh; })).concat(st.words.map(function (w) { return w.zh; }));
+    G.usedPick = G.usedPick || {};
+    var word = null;
+    ok.some(function (z) { if (!G.usedPick[z] && LIFE[z]) { word = z; return true; } return false; });
+    if (!word) return null;
+    G.usedPick[word] = 1;
+    // the right answer: a textbook or practice sentence with the word if there is one (not the word-card sentence she saw in Round 2)
+    var alts = ALL_GAPS.filter(function (g) { return g.ans === word && g.full.length <= 16; }).map(function (g) { return g.full; });
+    var w = BY_ZH[word], right = alts.length ? shuffle(alts)[0] : LIFE[word][0], known = {}; Object.keys(LIFE).forEach(function (k) { known[LIFE[k][0]] = 1; });
+    ALL_GAPS.forEach(function (g) { known[g.full] = 1; });
+    var wrong = [], seen = {}; seen[right] = 1;
+    var pool = shuffle(ALL.filter(function (x) { return x.zh !== word && x.zh.length === word.length && LIFE[x.zh] && !sameGroup(x.zh, word); }));
+    pool.sort(function (a, b) { return Math.abs(a.stage - w.stage) - Math.abs(b.stage - w.stage); });
+    for (var i = 0; i < pool.length && wrong.length < 3; i++) {
+      var x = pool[i], src = LIFE[x.zh][0];
+      if (src.indexOf(word) >= 0) continue;
+      var t = src.replace(x.zh, word);
+      if (seen[t] || known[t]) continue;
+      seen[t] = 1; wrong.push(t);
+    }
+    if (wrong.length < 3) return null;
+    var q = { level: "A", type: "pick", w: w, key: word, answer: right };
+    q.opts = shuffle([right].concat(wrong)).map(function (t) { return { zh: t, text: t }; });
+    return q;
   }
   function chooseA(stageIdx) {
     var st = STAGES[stageIdx], cleanIds = cleanGapIds();
@@ -356,7 +392,8 @@
     }
     var qs = pickWords(RULES.perRound, "bR").map(function (w) { return buildRC("R", w); })
       .concat(pickWords(RULES.perRound, "bC").map(function (w) { return buildRC("C", w); }));
-    for (var k = 0; k < RULES.perRound; k++) qs.push({ level: "A", pending: true });
+    for (var k = 0; k < RULES.perRound; k++) qs.push({ level: "A", pending: true, kind: k % 2 ? "gap" : "pick" });
+    var aTail = shuffle(qs.splice(2 * RULES.perRound, RULES.perRound)); qs = qs.concat(aTail);
     G = { stage: i, qs: qs, idx: 0, score: 0, hints: 0, coins: 0, wrong: [], t0: Date.now(), elapsed: 0, cOk: {}, used: {}, badges: [] };
     log("stage_start", null, { stage: i, mix: "10R10C10A" });
     saveSession();
@@ -364,15 +401,15 @@
   }
   // ---- save / resume a session on the same day ----
   function packQ(q) {
-    if (q.pending) return { level: "A", pending: true };
+    if (q.pending) return { level: "A", pending: true, kind: q.kind };
     return { level: q.level, type: q.type, w: q.w ? q.w.zh : null, key: q.key || null, item: q.item ? q.item.id : null, answer: q.answer || null, opts: q.opts.map(function (o) { return o.zh; }) };
   }
   function unpackQ(p) {
-    if (p.pending) return { level: "A", pending: true };
+    if (p.pending) return { level: "A", pending: true, kind: p.kind };
     var q = { level: p.level, type: p.type, w: BY_ZH[p.w] || { zh: p.w, py: "", en: "" }, key: p.key, answer: p.answer };
     if (p.item) { q.item = ALL_GAPS.concat(ALL_RQS).filter(function (x) { return x.id === p.item; })[0]; }
     q.opts = p.opts.map(function (z) {
-      if (p.type === "rq") return { zh: z, text: z };
+      if (p.type === "rq" || p.type === "pick") return { zh: z, text: z };
       if (p.type === "gap") return { zh: z, text: z, w: BY_ZH[z] };
       return BY_ZH[z] || { zh: z, py: "", en: "" };
     });
@@ -414,7 +451,9 @@
     en2zh: [["py", "Aa", "Pinyin"], ["hear", "🔊", "Hear it"], ["tr", "EN", "Translate"]],
     pic: [["py", "Aa", "Pinyin"], ["hear", "🔊", "Hear it"], ["tr", "EN", "Translate"]],
     gap: [["sent", "🔊", "Hear sentence"], ["key", "Aa", "Key words"], ["tr", "EN", "Translate"]],
-    rq: [["sent", "🔊", "Hear sentence"], ["key", "Aa", "Key words"], ["tr", "EN", "Translate"]]
+    rq: [["sent", "🔊", "Hear sentence"], ["key", "Aa", "Key words"], ["tr", "EN", "Translate"]],
+    ctx: [["py", "Aa", "Pinyin"], ["sent", "🔊", "Hear sentence"], ["tr", "EN", "Translate"]],
+    pick: [["hear", "🔊", "Hear word"], ["en", "EN", "Word meaning"], ["clue", "🔍", "Character clue"]]
   };
   function sentenceHtml(text) {
     return text.split("").map(function (c) {
@@ -433,22 +472,28 @@
   }
   function question() {
     var q = G.qs[G.idx];
-    if (q.pending) { q = G.qs[G.idx] = chooseA(G.stage); saveSession(); }
+    if (q.pending) { q = G.qs[G.idx] = (q.kind === "pick" && choosePick(G.stage)) || chooseA(G.stage); saveSession(); }
     q.hints = []; q.t0 = Date.now(); q.done = false;
     var w = q.w, L = LVL[q.level], pct = Math.round(G.idx / G.qs.length * 100), prompt = "", optHtml;
-    var label = { hear: "Listen. Which character is it?", twin: "Spot the twin! Which one is…", zh2en: "What does this mean?", en2zh: "Which one means…", pic: "这是什么？ <small>(What is this?)</small>", gap: "Fill the gap", rq: "Read, then answer" }[q.type];
+    var label = { hear: "Listen. Which character is it?", twin: "Spot the twin! Which one is…", zh2en: "What does this mean?", en2zh: "Which one means…", pic: "这是什么？ <small>(What is this?)</small>", gap: "Fill the gap", rq: "Read, then answer", ctx: "What does the <b style=\"color:#7a3fd0\">purple word</b> mean here?", pick: "Which sentence uses this word correctly?" }[q.type];
     if (q.type === "hear") prompt = (canSpeak() ? '<button class="speak" id="say" aria-label="Play sound">🔊</button><span class="muted">Tap to hear again</span>' : '<span class="py" style="font-size:40px">' + w.py + "</span>") + '<span class="py hidden" id="py">' + w.py + "</span>";
     if (q.type === "twin") prompt = '<span class="py" style="font-size:42px">' + w.py + '</span><span class="reveal hidden" id="en">= ' + esc(w.en) + "</span>";
     if (q.type === "zh2en") prompt = '<span class="big">' + w.zh + '</span><span class="py hidden" id="py">' + w.py + '</span><span class="reveal hidden" id="tr">= ' + esc(w.en) + "</span>";
     if (q.type === "en2zh") prompt = '<span class="en">' + esc(w.en) + "</span>";
     if (q.type === "pic") prompt = '<span class="pic">' + w.pic + '</span><span class="reveal hidden" id="tr">= ' + esc(w.en) + "</span>";
+    if (q.type === "ctx") {
+      var Lc = LIFE[w.zh];
+      prompt = '<div class="rb nopy" id="ctxs" style="background:#f6f1ff;border-radius:12px;padding:8px 10px">' + rubyHtml(Lc[0], Lc[1], w.zh) + '</div><span class="reveal hidden" id="tr">“' + esc(Lc[2]) + "”</span>";
+    }
+    if (q.type === "pick") prompt = '<div class="row"><span class="zh" style="font-size:56px">' + w.zh + '</span><span class="py hidden" id="py">' + w.py + '</span></div><span class="reveal hidden" id="en">= ' + esc(w.en) + "</span>";
     if (q.type === "gap" || q.type === "rq") {
       var it = q.item;
       prompt = '<span class="srctag ' + (it.src === "tb" ? "tb" : "nw") + '">' + (it.src === "tb" ? "From your textbook · " + STAGES[it.stage].zh : "New sentence · words you know") + "</span>" +
         '<div class="sent zh">' + sentenceHtml(it.text) + "</div>" + (q.type === "rq" ? '<div class="zh" style="font-size:24px;color:' + L.color + '">' + sentenceHtml(it.q) + "</div>" : "") +
         '<div id="gl" class="hidden gl">' + gloss(it.text + (it.q || "")).map(function (g) { return '<span><b class="zh">' + g[0] + "</b> " + esc(g[1]) + "</span>"; }).join("") + "</div>";
     }
-    if (q.type === "zh2en") optHtml = q.opts.map(function (o) { return esc(o.en); });
+    if (q.type === "zh2en" || q.type === "ctx") optHtml = q.opts.map(function (o) { return esc(o.en); });
+    else if (q.type === "pick") optHtml = q.opts.map(function (o) { return '<span class="zh sentopt">' + esc(o.text).split(w.zh).join('<u>' + w.zh + "</u>") + "</span>"; });
     else if (q.type === "rq" || q.type === "gap") optHtml = q.opts.map(function (o) { var g = o.w || BY_ZH[o.zh]; return '<span class="zh">' + o.text + "</span>" + (g ? '<small class="oen hidden" style="color:#1b1b2b">' + esc(g.en) + "</small>" : ""); });
     else optHtml = q.opts.map(function (o) { return '<span class="zh">' + o.zh + "</span>" + (o.py ? '<small class="opy hidden">' + o.py + "</small>" : "") + (o.en ? '<small class="oen hidden" style="color:#1b1b2b">' + esc(o.en) + "</small>" : ""); });
     var cost = RULES.hintCost[q.level];
@@ -456,7 +501,7 @@
     app.innerHTML =
       '<div class="row"><button class="btn" id="quit" aria-label="Quit" style="min-height:40px;width:44px;padding:0">✕</button><div class="bar" style="flex:1"><i style="width:' + pct + '%"></i></div><b>' + (G.idx + 1) + "/" + G.qs.length + "</b></div>" +
       '<div class="card prompt" style="margin-top:14px"><span class="tag" style="background:' + L.color + '">' + L.tag + '</span><span class="muted">' + label + "</span>" + prompt + "</div>" +
-      '<div class="opts' + (q.type === "rq" || q.type === "gap" ? " small" : "") + '" style="margin-top:14px">' + optHtml.map(function (h, k) { return '<button class="opt" data-k="' + k + '">' + h + "</button>"; }).join("") + "</div>" +
+      '<div class="opts' + (q.type === "rq" || q.type === "gap" ? " small" : q.type === "pick" ? " list" : "") + '" style="margin-top:14px">' + optHtml.map(function (h, k) { return '<button class="opt" data-k="' + k + '">' + h + "</button>"; }).join("") + "</div>" +
       '<div id="cluebox" class="hidden"></div>' +
       '<div class="hints" style="margin-top:14px" id="hintbox"><div class="spread"><b>Need help?</b><span class="muted">Each hint = −' + cost + " coin" + (cost > 1 ? "s" : "") + '</span></div><div class="grid">' +
       HINTS[q.type].map(function (h, k) { return '<button class="hint" style="background:' + ["#e9e0ff", "var(--blue)", "var(--pink)"][k] + '" data-h="' + h[0] + '"' + (k ? " disabled" : "") + '><span style="font-size:16px">' + h[1] + "</span>" + h[2] + "</button>"; }).join("") + "</div></div>" +
@@ -483,7 +528,9 @@
     if (h === "slow") speakSlow(w.zh);
     if (h === "clue") { var cb = $("#cluebox"); cb.className = "clue"; cb.innerHTML = '<b>🔍 Character clue</b><div class="row" style="margin-top:6px"><span class="zh" style="font-size:46px">' + w.zh + '</span><span style="font-size:15px;line-height:1.35">' + esc(w.clue) + "</span></div>"; }
     if (h === "tr") { show("#tr"); show(".oen"); show("#gl"); }
-    if (h === "sent") speak((q.item.full || q.item.text) + (q.item.q ? "。" + q.item.q : ""));
+    if (h === "sent") speak(q.type === "ctx" ? LIFE[w.zh][0] : (q.item.full || q.item.text) + (q.item.q ? "。" + q.item.q : ""));
+    if (h === "py" && q.type === "ctx") $("#ctxs").classList.remove("nopy");
+    if (h === "en" && q.type === "pick") show("#py");
     if (h === "key") show(".kp");
   }
   function answer(k) {
@@ -506,15 +553,15 @@
     var after = stats(key), newBadge = null;
     ["R", "C", "A"].forEach(function (L) { if (!hadBadge[L] && after["b" + L]) newBadge = L; });
     if (newBadge) G.badges.push([key, newBadge]);
-    if (q.level === "A") speak(q.item.full ? q.item.full : q.item.text); else speak(w.zh);
+    if (q.type === "pick") speak(q.answer); else if (q.level === "A") speak(q.item.full ? q.item.full : q.item.text); else speak(w.zh);
     $("#hintbox").classList.add("hidden");
     var detail = q.level === "A"
-      ? (q.item.full ? '<span class="zh">' + esc(q.item.full) + "</span>" : '<span class="zh">' + esc(q.answer) + "</span>")
+      ? (q.item && q.item.full ? '<span class="zh">' + esc(q.item.full) + "</span>" : '<span class="zh">' + esc(q.answer) + "</span>")
       : '<span class="zh">' + w.zh + "</span> " + w.py + " = " + esc(w.en);
     saveSessionAfterAnswer();
     var head = '<div class="feedback" style="background:' + (ok ? "#c9f5d4" : "#ffe1e1") + '"><div style="flex:1">' +
       (ok ? (nh ? "Correct!" : ["Yes! First try!", "Amazing!", "So smart!", "Perfect!"][Math.floor(Math.random() * 4)]) : "Not quite! Here’s the word:") +
-      (q.level === "A" && q.item.full ? '<br><span class="zh" style="font-size:16px">' + esc(q.item.full) + "</span>" : "") +
+      (q.level === "A" && (q.item ? q.item.full : q.answer) ? '<br><span class="zh" style="font-size:16px">' + esc(q.item ? q.item.full : q.answer) + "</span>" : "") +
       (speed ? "<br><small>⚡ Speed bonus!</small>" : "") + (newBadge ? '<br><b style="color:' + LVL[newBadge].color + '">🏅 New ' + LVL[newBadge].name + " badge for " + key + "!</b>" : "") + "</div>" +
       '<b style="white-space:nowrap">' + coin() + "+" + earned + "</b></div>";
     showWordCard(head, key);
@@ -862,6 +909,8 @@
     });
     var accSrc = function (f) { var x = A.filter(function (e) { return levelOf(e) === "A" && f(e.src); }), r = x.filter(function (e) { return e.correct && !e.hints; }).length; return x.length ? Math.round(r / x.length * 100) : null; };
     var aTb = accSrc(function (s) { return s === "tb"; }), aNw = accSrc(function (s) { return s === "nw" || s === "rq"; });
+    var accType = function (t) { var x = A.filter(function (e) { return e.qtype === t; }), r = x.filter(function (e) { return e.correct && !e.hints; }).length; return x.length ? Math.round(r / x.length * 100) : null; };
+    var aPick = accType("pick"), aCtx = accType("ctx");
     // mix-ups
     var mix = {}; A.forEach(function (e) { if (!e.correct && e.chosen) { var k = e.item + "→" + e.chosen; mix[k] = (mix[k] || 0) + 1; } });
     var mixes = Object.keys(mix).sort(function (a, b) { return mix[b] - mix[a]; }).slice(0, 6);
@@ -917,6 +966,8 @@
       '<span class="muted">If “Hear it” helps most, she understands spoken Chinese better than written.</span></div>' +
       '<div class="sec"><h3>Textbook vs new sentences</h3>' + bar("Textbook sentences, first try", aTb, "#7a3fd0") + bar("New sentences (same words), first try", aNw, "#a78bfa") +
       '<span class="muted">A big gap means she may be remembering the textbook rather than reading it.</span></div>' +
+      '<div class="sec"><h3>Using words in sentences</h3>' + bar("C · Meaning of a word inside a sentence, first try", aCtx, "#c4570a") + bar("A · Picks the sentence that uses the word correctly, first try", aPick, "#7a3fd0") +
+      '<span class="muted">The second bar is the clearest sign she can really use a word.</span></div>' +
       '<div class="sec"><h3>Words she struggles with</h3>' + (struggle.length ? '<table><tr><th>Word</th><th>Translate taps</th><th>Avg time</th><th>Wrong</th></tr>' + struggle.map(function (x) { var w = BY_ZH[x.zh] || { py: "", en: "" }; return '<tr><td><span class="zh" style="font-size:18px">' + x.zh + '</span><br><span class="muted" style="font-size:11px">' + esc(w.en) + "</span></td><td>" + x.w.tr + "×</td><td>" + (x.w.ms / x.w.n / 1000).toFixed(1) + "s</td><td>" + x.w.wrong + "×</td></tr>"; }).join("") + "</table>" : '<span class="muted">Nothing yet.</span>') + "</div>" +
       '<div class="sec"><h3>Understanding signals</h3><table>' +
       mixes.map(function (k) { var p = k.split("→"); return '<tr><td>Mixed up <span class="zh">' + p[0] + '</span> with <span class="zh">' + p[1] + "</span></td><td><b>" + mix[k] + "×</b></td></tr>"; }).join("") +

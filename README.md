@@ -10,8 +10,8 @@ Runs on Cloudflare Workers, with progress saved in a Cloudflare D1 database.
 | **Power Check** | Placement test: 12 characters from each year's textbook (Standard 1–4): 4 Recognition, 6 Comprehension, 2 Application, with an "I don't know" button. Stops early when it gets too hard. Repeats every 28 days, or when Mummy asks for one. |
 | **Islands** | 23 stages, one per Tahun 1 lesson (识字一 → 叶子鸟). Each stage has 15 questions over three levels. |
 | **Recognition 认读** | Hear & pick (sound-alike choices) and Spot the twin (look-alike characters). Hints: Pinyin / Hear slowly / Character clue. +3 coins, −1 per hint. |
-| **Comprehension 理解** | 中文 → English, English → 中文, and picture match with no English. Hints: Pinyin / Hear it / Translate. +5 coins, −3 per hint. |
-| **Application 运用** | Fill the gap (textbook sentences first, then new sentences using only her words) and Read & answer. Hints: Hear sentence / Key words / Translate. +7 coins, −3 per hint. |
+| **Comprehension 理解** | Meaning in a sentence: the word is highlighted inside an everyday sentence and she picks what it means there (falls back to 中文 → English / picture match if a word has no sentence). Hints: Pinyin / Hear it / Translate. +5 coins, −3 per hint. |
+| **Application 运用** | Half “Which sentence uses the word correctly?” (wrong choices are real sentences with the word in the wrong place), half Fill the gap (textbook first) and Read & answer. Hints: Hear sentence / Key words / Translate. +7 coins, −3 per hint. |
 | **Daily session** | One session a day: Round 1 Recognition → Round 2 Comprehension → Round 3 Application, 10 questions each (about 15–20 min). She can pause and continue the same day. |
 | **Word cards** | After every answer: the word with pinyin and meaning, an everyday-life sentence (Keisha & Mum, ramen, school run, travel, art & craft) with pinyin over each character and an English translation, plus a fun fact for many words. Sentences in `public/life.js`, fun facts in `public/funfacts.js`. |
 | **Daily reward** | +10 coins, claimed after finishing all 3 rounds. Finishing the session also counts as the day’s check-in. |
