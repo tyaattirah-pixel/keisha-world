@@ -52,6 +52,17 @@
     A: { name: "Application", zh: "运用", color: "#7a3fd0", tag: "APPLICATION · 运用" }
   };
 
+  var SHOP = {
+    hair: [["black", "Black", 0], ["brown", "Brown", 80], ["lilac", "Lilac", 120], ["pink", "Pink", 150], ["blonde", "Blonde", 150]],
+    style: [["long", "Long", 0], ["bob", "Bob", 100], ["buns", "Space buns", 150]],
+    top: [["purple", "Purple", 0], ["black", "Black", 60], ["mint", "Mint", 80], ["yellow", "Sunny", 80], ["red", "Red", 100]],
+    skirt: [["pink", "Pink", 0], ["black", "Black", 60], ["blue", "Blue", 80], ["white", "White", 80]],
+    phones: [["white", "White", 0], ["pink", "Pink", 60], ["black", "Black", 60], ["gold", "Gold", 200]],
+    pet: [["cat", "Cat", 150, 0], ["bunny", "Bunny", 180, 0], ["puppy", "Puppy", 200, 0], ["panda", "Panda", 250, 10]],
+    petacc: [["bow", "Pet bow", 40], ["glasses", "Cool glasses", 60], ["crown", "Pet crown", 90]]
+  };
+  var SHOP_TABS = [["hair", "Hair colour"], ["style", "Hair style"], ["top", "Tops"], ["skirt", "Skirts"], ["phones", "Headphones"], ["pet", "Pets"], ["petacc", "Pet stuff"]];
+
   /* ======================= STATE ======================= */
   function blank() {
     return {
